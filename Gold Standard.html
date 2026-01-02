@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PropertyWize Sales Engine | End-to-End Co-Pilot</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* BRAND COLORS */
+        :root { 
+            --pw-blue: #1a4a7c; 
+            --pw-green: #3d9970; 
+            --pw-gold: #ffca28;
+            --pw-red: #d9534f;
+            --bg-gray: #f4f6f9;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; 
+            background: var(--bg-gray); 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* SIDEBAR AESTHETICS */
+        #sidebar { 
+            width: 350px; 
+            min-width: 350px;
+            background: var(--pw-blue); 
+            color: white; 
+            padding: 25px; 
+            height: 100%; 
+            position: fixed; 
+            overflow-y: auto; 
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1); 
+            z-index: 100;
+        }
+
+        .logo-box { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 25px; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .logo { max-width: 80px; height: auto; display: block; margin: 0 auto 5px auto; }
+        .brand-name { color: var(--pw-blue); font-weight: 900; font-size: 22px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* NAVIGATION LINKS */
+        .report-link { 
+            display: flex; 
+            align-items: center;
+            background: rgba(255,255,255,0.1); 
+            color: white; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border-radius: 6px; 
+            text-decoration: none; 
+            font-size: 13px; 
+            transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .report-link:hover { background: var(--pw-green); border-color: var(--pw-green); transform: translateX(5px); }
+
+        /* MAIN CONTENT AREA - FIXED LAYOUT */
+        #main { 
+            margin-left: 350px; 
+            padding: 40px; 
+            width: 100%; 
+            overflow-y: auto; 
+            height: 100vh;
+            box-sizing: border-box;
+            background: #eef2f5;
+        }
+
+        .card { 
+            background: white; 
+            padding: 50px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+            margin: 0 auto; 
+            max-width: 900px; /* Limits width to keep text readable */
+            border-top: 5px solid var(--pw-blue);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        /* UTILITIES */
+        .hidden { display: none !important; }
+
+        h2 { color: var(--pw-blue); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        h3 { color: #555; margin-top: 25px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* FORM ELEMENTS */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
+        
+        label { display: block; font-weight: 600; font-size: 13px; color: #444; margin-bottom: 5px; }
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            background: #fafafa;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus { border-color: var(--pw-blue); background: white; outline: none; }
+
+        /* BUTTONS */
+        .btn { 
+            background: var(--pw-green); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 800; 
+            width: 100%; 
+            margin-top: 20px; 
+            font-size: 16px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .btn:hover { background: #2e7d5a; transform: translateY(-2px); }
+        .btn-blue { background: var(--pw-blue); }
+        .btn-blue:hover { background: #12365c; }
+        
+        /* WIZARD BUTTONS */
+        .btn-small { width: auto; padding: 10px 20px; display: inline-block; margin-top: 10px; font-size: 14px;}
+        .btn-back { background: #7f8c8d; }
+        .demo-nav { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; }
+
+        /* STATUS BADGES */
+        .status-box { padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 20px; font-size: 16px; }
+        .status-pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* FEE CALCULATOR */
+        .fee-calc { 
+            background: rgba(0,0,0,0.2); 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .fee-calc strong { display: block; font-size: 18px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; }
+
+        /* PREP CHECKLIST */
+        .checklist-item { 
+            display: flex; 
+            align-items: center; 
+            background: #eef2f7; 
+            padding: 15px; 
+            margin-bottom: 10px; 
+            border-radius: 6px; 
+            border-left: 5px solid var(--pw-blue); 
+        }
+        .checklist-item input { width: 20px; height: 20px; margin-right: 15px; }
+
+        /* SCRIPT BOXES */
+        .script-box { 
+            background: #fff8e1; 
+            border: 1px solid #ffe082; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            font-style: italic; 
+            color: #5d4037; 
+            line-height: 1.6;
+            font-size: 18px;
+        }
+        .step-label { 
+            background: var(--pw-blue); 
+            color: white; 
+            padding: 8px 12px; 
+            border-radius: 4px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            margin-bottom: 15px; 
+            display: inline-block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <div class="logo-box">
+        <h1 class="brand-name">PropertyWize</h1>
+        <p style="color:#666; font-size:12px; margin:5px 0 0 0;">Sales Agent Portal v22.0</p>
+    </div>
+
+    <h3 style="color:white; margin-bottom:10px;">Research Sequence</h3>
+    <a href="https://sdat.dat.maryland.gov/RealProperty/" target="_blank" class="report-link">1. SDAT Real Property Search</a>
+    <a href="https://www.rentometer.com" target="_blank" class="report-link">2. Rentometer (Record Median)</a>
+    <a href="https://www.niche.com" target="_blank" class="report-link">3. Niche Grade</a>
+    <a href="https://arcgisportal.baltimorepolice.org/publiccrimemap/" target="_blank" class="report-link">4. Baltimore Crime Map</a>
+    <a href="https://www.propertywize.com/roi-calculator" target="_blank" class="report-link">5. ROI Calculator Report</a>
+    <a href="https://www.propertywize.com/rent-sell-calculator" target="_blank" class="report-link">6. Rent vs Sell Report</a>
+    <a href="https://www.google.com/maps" target="_blank" class="report-link">7. Google Maps (Exterior)</a>
+    <a href="https://www.zillow.com" target="_blank" class="report-link">8. Zillow (Interior)</a>
+
+    <div class="fee-calc">
+        <strong>Management Fee Quote</strong>
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span>Standard:</span> <span id="stdDisplay">$0.00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; color:var(--pw-green); font-weight:bold;">
+            <span>Premium:</span> <span id="premDisplay">$0.00</span>
+        </div>
+        <p style="font-size:11px; margin-top:10px; line-height:1.4;">*Premium includes <strong>2-mo rent guarantee</strong>.</p>
+    </div>
+</div>
+
+<div id="main">
+    
+    <div id="phase1" class="card">
+        <h2>Phase 1: Property Qualification & Intake</h2>
+        
+        <div class="grid">
+            <div>
+                <label>Assigned Sales Agent</label>
+                <input type="text" id="agentInput" placeholder="e.g. Vonn, Nicole">
+                
+                <label>EPM Assigned</label>
+                <input type="text" id="epmInput" placeholder="e.g. Shanicka, Michelle">
+                
+                <label>Legal Owner Name (Exact SDAT Match)</label>
+                <input type="text" id="ownerInput" placeholder="e.g. PALESTINE FOX">
+                
+                <label>Jurisdiction (Affects Fee Quote)</label>
+                <select id="jurisdiction" onchange="updateFees()">
+                    <option value="City">Baltimore City</option>
+                    <option value="County">Baltimore County / Other</option>
+                </select>
+            </div>
+            <div>
+                <label>Property Address (Exact SDAT Match)</label>
+                <input type="text" id="addressInput" placeholder="e.g. 414 Water St Apt 2913 Baltimore, Md 21202">
+                
+                <label>Rentometer Median Rent</label>
+                <input type="number" id="rentInput" placeholder="2100" oninput="updateFees()">
+                
+                <label>Total Units</label>
+                <input type="number" id="unitsInput" value="1" oninput="updateFees()">
+            </div>
+        </div>
+
+        <hr>
+
+        <h3>Singular Research Metrics (Pass/Fail)</h3>
+        <div class="grid">
+            <div>
+                <label>Niche Area Grade</label>
+                <select id="nGrade" onchange="runLogic()">
+                    <option value="">Select Singular Grade...</option>
+                    <option value="A+">A+</option><option value="A">A</option><option value="A-">A-</option>
+                    <option value="B+">B+</option><option value="B">B</option><option value="B-">B-</option>
+                    <option value="C+">C+</option>
+                    <option value="fail">C</option><option value="fail">D</option><option value="fail">F</option>
+                </select>
+                
+                <label>Crime Stats (Map Verification)</label>
+                <select id="crimeInput" onchange="runLogic()">
+                    <option value="Low">Low Crime</option>
+                    <option value="Moderate">Moderate Crime</option>
+                    <option value="fail">High Crime (FAIL)</option>
+                </select>
+            </div>
+            <div>
+                <label>Board-Ups on Block</label>
+                <select id="bUps" onchange="runLogic()">
+                    <option value="0">0 Board-ups</option>
+                    <option value="1">1 Board-up</option>
+                    <option value="fail">2 Board-ups (FAIL)</option>
+                    <option value="fail">3 or more (FAIL)</option>
+                </select>
+                
+                <label>Intake Date</label>
+                <input type="date" id="intakeDate">
+            </div>
+        </div>
+
+        <h3>Mandatory Evidence Uploads</h3>
+        <div class="grid">
+            <div>
+                <label>1. SDAT Record</label><input type="file" id="fSDAT">
+                <label>2. Rentometer Median Report</label><input type="file" id="fRent">
+                <label>3. Niche Grade Report</label><input type="file" id="fNiche">
+                <label>4. Crime Map Screenshot</label><input type="file" id="fCrime">
+            </div>
+            <div>
+                <label>5. ROI Report (Optional)</label><input type="file" id="fROI">
+                <label>6. Rent vs Sell Report (Optional)</label><input type="file" id="fRS">
+                <label>7. Exterior & Interior Photos</label><input type="file" multiple id="fPhotos">
+                <label>Owner Goal</label>
+                <select id="goalInput"><option>Rent</option><option>Sell</option><option>Unsure</option></select>
+            </div>
+        </div>
+
+        <div id="machineResult"></div>
+        
+        <div id="recBox" class="hidden" style="background:#fff3cd; padding:15px; border-radius:6px; border:1px solid #ffeeba; margin-top:20px;">
+            <strong>Official Recommendation:</strong>
+            <p id="recText" style="margin:5px 0 0 0;">Awaiting Logic...</p>
+        </div>
+
+        <button class="btn btn-blue" onclick="generateBrandedPDF()">GENERATE PROPERTY INTAKE REPORT</button>
+        <button id="nextBtn" class="btn hidden" onclick="showPhase(2)">PROCEED TO PHASE 2: PREP</button>
+    </div>
+
+    <div id="phase2" class="card hidden">
+        <h2>Phase 2: Mandatory Prep (30 Mins Before Demo)</h2>
+        <p style="color:#666;">Complete this checklist before the start of the Google Meet call.</p>
+        
+        <div class="checklist-item">
+            <input type="checkbox"> 
+            <span><strong>Tech Set Up:</strong> Join the Google Meet Meeting Url, Make sure Gemini Notetaking and Recording functions are on, Test Microphone, and Internet Connection.</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> 
+            <span><strong>Demo Buffer:</strong> Open 10-Min Demo Video in a new tab and let it buffer.</span> <a href="https://drive.google.com/file/d/1sYIT1XfoUvqyt8Txsp0adYPwXfV5wTSt/view" target="_blank" style="color:#1a4a7c; text-decoration:underline;">Demo Video</a>.</span>
+        </div>
+        <div class="checklist-item">
+		    <input type="checkbox">
+          <span><strong>Handbook Ready:</strong> Open <a href="https://www.flipsnack.com/propertywize/property_wize_faq_2019" target="_blank" style="color:#1a4a7c; text-decoration:underline;">Owner Handbook (FlipSnack)</a>.</span>
+		</div>
+        <div class="checklist-item">
+            <input type="checkbox"> 
+            <span><strong>LeadSimple Status:</strong> Confirm lead status is set to "Meeting Scheduled".<a href="https://app.leadsimple.com/v2" target="_blank" style="color:#1a4a7c; text-decoration:underline;">LeadSimple</a>.</span>
+		</div></span>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-back" style="background:#888;" onclick="showPhase(1)">Back</button>
+            <button class="btn" onclick="showPhase(3)">START PHASE 3: LIVE DEMO</button>
+        </div>
+
+
+    <div id="phase3" class="card hidden">
+        <h2>Phase 3: Live Demo Co-Pilot</h2>
+        
+        <div id="demoStep1" class="demo-step">
+            <span class="step-label">Step 1: The Greeting & Agenda</span>
+            <div class="script-box">
+                <p style="margin-top:0;">
+                    "Hi [Owner], I'm [Your Name] with PropertyWize. Thank you for taking the time out to learn more about our services. I've completed the Property Analysis for <strong id="scriptAddr">Address</strong>. I see you have <strong id="scriptUnits">1</strong> property(ies) where you are seeking for management services. I'm excited to show you why PropertyWize is the safest choice for your asset."
+                </p>
+                <p><strong>"Just so you know what to expect during this meeting, I want to keep this call focused as your time is important. Here is the what you can expect:"</strong></p>
+                <ul style="margin-bottom:15px; line-height: 1.6;">
+                    <li><strong>1. Ill start by sharing my screen of a Brief Video:</strong> Expect a brief overview of our history, philosophy, culture and how our company work hard to End our Clients Headaches.</li>
+                    <li><strong>2. After the video I'll Go over Your Property Rental Analysis:</strong> Review the analysis results powered by Rentometer to determine Rental Rates.</li>
+                    <li><strong>3. Open Questions:</strong> Answer any questions you have as well as collect more details of the home (Current Occupancy, Turnover Status, etc</li>
+                    <li><strong>4. Closing:</strong> Ill provide a Quote for our Management Fee based on Fee Schedule and how we can move forward to having you Partner with Us!.</li>
+                </ul>
+                <p style="margin-bottom:0;">"Does that sound like a good plan?"</p>
+            </div>
+            
+            <div style="background-color: #fff3cd; color: #856404; padding: 12px; border: 1px solid #ffeeba; border-radius: 4px; margin-top: 10px;">
+                <strong>⚠️ CRITICAL POST-CALL:</strong> Upload Report to Lead Simple & Mark status as <strong>"Meeting Completed"</strong>.
+            </div>
+
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showPhase(2)">Back to Prep</button>
+                <button class="btn btn-small btn-blue" onclick="showDemoStep(2)">Next: Video Intro ➡</button>
+            </div>
+        </div>
+
+        <div id="demoStep2" class="demo-step hidden">
+            <span class="step-label">Step 2: The Tech Overview</span>
+            <p>Share screen and play the video. Mute yourself while it plays.</p>
+            <button class="btn btn-blue" style="width:auto; padding:12px;" onclick="window.open('https://drive.google.com/file/d/1sYIT1XfoUvqyt8Txsp0adYPwXfV5wTSt/view')">▶ Play 10-Min Overview Video</button>
+
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showDemoStep(1)">⬅ Back</button>
+                <button class="btn btn-small btn-blue" onclick="showDemoStep(3)">Next: Market Analysis ➡</button>
+            </div>
+        </div>
+
+        <div id="demoStep3" class="demo-step hidden">
+            <span class="step-label">Step 3: Rental Market Analysis</span>
+            <p>Refer to the <strong>Rentometer Report</strong> (Median Rent).</p>
+            <div class="script-box">
+                <p style="margin-top:0;">
+                    "Mr./Ms. Owner, looking at the data from Rentometer, the <strong>median rent</strong> for comparable properties in your area is currently projected at <strong style="background-color: #fff3cd; padding: 0 4px;">[Insert Rent Amount]</strong>."
+                </p>
+                <p style="margin-bottom:0;">
+                    "That being said, we work for <em>you</em>. If you believe your property can command a higher rate, we are absolutely willing to list it at that premium price to test the market."
+                </p>
+            </div>
+            
+            <p style="margin-top:15px;">
+                <strong>Common Questions?</strong> Reference the <a href="#" style="color:var(--pw-blue); font-weight:bold; text-decoration:underline;">Owner FAQ Sheet</a>.<button class="btn btn-blue" style="width:auto; padding:12px;" onclick="window.open('https://docs.google.com/spreadsheets/d/1ZfIML5GmyduXgyXoW1n4tE1AjDI5plEWyAVZbcIxIeI/edit?usp=drive_link')"> ▶Open Owner FAQ Sheet</button>
+            </p>
+
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showDemoStep(2)">⬅ Back</button>
+                <button class="btn btn-small btn-blue" onclick="showDemoStep(4)">Next: The Close ➡</button>
+            </div>
+        </div>
+
+        <div id="demoStep4" class="demo-step hidden">
+            <span class="step-label">Step 4: The Closing Pitch</span>
+            
+            <div class="script-box" style="background-color: #fff8e1; font-size: 18px;">
+                <p style="margin-top:0;">
+                    "Mr./Ms. Owner, honestly, looking at this asset, I want to make sure you sleep easy at night. My strongest recommendation is the <strong>Premium Plan</strong> because it essentially <strong>insures your rental income</strong>, shifting the risk of tenant default off your shoulders."
+                </p>
+
+                <p>
+                    "To give you the numbers: The Standard Plan is <span id="closeStdPct">--%</span> (<span id="closeStdDol">$0.00</span>), but for <span id="closePremPct">--%</span> (<span id="closePremDol">$0.00</span>), you get that full Rent Guarantee protection included."
+                </p>
+                
+                <p style="font-weight:bold; color: #1a4a7c;">
+                    "Does the peace of mind of the Premium Plan sound like the right fit for you?"
+                </p>
+
+                <hr style="border: 0; border-top: 1px solid #e0cca3; margin: 15px 0;">
+
+                <p style="margin-bottom:0; font-style: normal; color: #27ae60; font-weight:bold;">
+                    (Once they agree):<br>
+                    "Fantastic. Look out for our team on sending the Management Agreement via DocuSign to your email right now—let's get started!"
+                </p>
+            </div>
+
+   
+
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showDemoStep(3)">⬅ Back</button>
+                <button class="btn btn-small" style="background-color: #27ae60;" onclick="showPhase(4)">Finish Demo ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="phase4" class="card hidden" style="background:#e8f5e9; border-top: 5px solid #27ae60;">
+        <h2 style="color:#27ae60; border-color:#c8e6c9;">Phase 4: Demo Completed</h2>
+        <div style="text-align:center; padding: 20px;">
+            <h1>🎉 GREAT JOB!</h1>
+            <p>Please submit your Quality Control details below.</p>
+        </div>
+        
+        <label>1. Google Meet Recording URL</label>
+        <input type="text" id="recUrl" placeholder="Paste link here...">
+        
+        <label>2. Upload Gemini Note Taker Summary</label>
+        <input type="file" id="geminiFile">
+        
+        <label>3. LeadSimple Update</label>
+        <select>
+            <option>LeadSimple Updated to "Demo Completed"</option>
+            <option>LeadSimple Updated to "Agreement Sent"</option>
+        </select>
+
+        <button class="btn btn-blue" onclick="alert('Success! Session logged for Audit.')">SUBMIT TO OPS MANAGER</button>
+        <br><br>
+        <button class="btn btn-back" style="width:auto; margin:0 auto; display:block;" onclick="showPhase(1)">Start New Lead</button>
+    </div>
+
+</div>
+
+<div id="pdf-template" style="display:none;">
+    <div id="qualifying-report-pdf" style="padding:40px; background:white; color:#333; font-family:sans-serif;">
+        <div style="border-bottom:4px solid #1a4a7c; padding-bottom:20px; margin-bottom:30px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h1 style="color:#1a4a7c; margin:0; font-size:24px;">Property Intake Report</h1>
+                <p style="margin:5px 0 0 0; color:#666;">Pre-Demo Qualification Audit</p>
+            </div>
+            <div style="text-align:right;">
+                <h2 style="color:#1a4a7c; margin:0;">PropertyWize</h2>
+                <p style="margin:0; font-size:12px;">Sales Division</p>
+            </div>
+        </div>
+
+        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:15px; font-size:14px;">1. PROPERTY SNAPSHOT</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:30px; font-size:14px;">
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Agent:</strong> <span id="pdfAgent"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Date:</strong> <span id="pdfDate"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Owner:</strong> <span id="pdfOwner"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Address:</strong> <span id="pdfAddress"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Units:</strong> <span id="pdfUnits"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Market Rent:</strong> $<span id="pdfRent"></span></td>
+            </tr>
+        </table>
+
+        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:15px; font-size:14px;">2. NEIGHBORHOOD SECURITY AUDIT</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:30px; font-size:14px;">
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Niche Grade:</strong> <span id="pdfGrade"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Board-Ups:</strong> <span id="pdfBU"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Crime Status:</strong> <span id="pdfCrime"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Goal:</strong> <span id="pdfGoal"></span></td>
+            </tr>
+        </table>
+
+        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:15px; font-size:14px;">3. EVIDENCE AUDIT LOG</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:30px; font-size:12px; color:#555;">
+            <tr>
+                <td style="padding:5px; border-bottom:1px solid #eee;"><strong>SDAT Record:</strong> <span id="pdfLogSDAT"></span></td>
+                <td style="padding:5px; border-bottom:1px solid #eee;"><strong>Rentometer:</strong> <span id="pdfLogRent"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:5px; border-bottom:1px solid #eee;"><strong>Niche Report:</strong> <span id="pdfLogNiche"></span></td>
+                <td style="padding:5px; border-bottom:1px solid #eee;"><strong>Crime Map:</strong> <span id="pdfLogCrime"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:5px; border-bottom:1px solid #eee;"><strong>ROI Report:</strong> <span id="pdfLogROI"></span></td>
+                <td style="padding:5px; border-bottom:1px solid #eee;"><strong>Rent vs Sell:</strong> <span id="pdfLogRS"></span></td>
+            </tr>
+             <tr>
+                <td colspan="2" style="padding:5px; border-bottom:1px solid #eee;"><strong>Photos:</strong> <span id="pdfLogPhotos"></span></td>
+            </tr>
+        </table>
+
+        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:15px; font-size:14px;">4. OFFICIAL RECOMMENDATION</h3>
+        <div style="background:#f4f6f9; padding:20px; border-left:5px solid #1a4a7c; border-radius:4px;">
+            <p id="pdfRecText" style="margin:0; font-weight:bold; line-height:1.5;">[Recommendation will appear here]</p>
+        </div>
+
+        <div style="margin-top:50px; border-top:1px solid #ddd; padding-top:10px; font-size:10px; color:#999; text-align:center;">
+            Verified by PropertyWize Sales Engine v22.0 | Internal Document
+        </div>
+    </div>
+</div>
+
+<script>
+    /// 1. DYNAMIC FEE CALCULATOR (Updated to Feed the Script)
+    function updateFees() {
+        const u = parseInt(document.getElementById('unitsInput').value) || 0;
+        const r = parseFloat(document.getElementById('rentInput').value) || 0;
+        const j = document.getElementById('jurisdiction').value;
+        
+        // Base Rates
+        let sRate = (j === "City") ? 0.10 : 0.08;
+        let pRate = (j === "City") ? 0.12 : 0.10;
+        
+        // Multi-Unit Discount Logic
+        if (u >= 2) { 
+            sRate -= 0.01; 
+            pRate -= 0.01; 
+        } 
+        
+        // Calculate Totals
+        const stdTotal = (u * r * sRate).toFixed(2);
+        const premTotal = (u * r * pRate).toFixed(2);
+
+        // Update Sidebar Calculator
+        document.getElementById('stdDisplay').innerText = "$" + stdTotal;
+        document.getElementById('premDisplay').innerText = "$" + premTotal;
+
+        // Update Closing Script Text (Step 4)
+        // Convert decimals (0.10) to percentages (10%)
+        document.getElementById('closeStdPct').innerText = (sRate * 100).toFixed(0) + "%";
+        document.getElementById('closeStdDol').innerText = "$" + stdTotal;
+        
+        document.getElementById('closePremPct').innerText = (pRate * 100).toFixed(0) + "%";
+        document.getElementById('closePremDol').innerText = "$" + premTotal;
+    }
+
+    // 2. QUALIFICATION ENGINE
+    function runLogic() {
+        const n = document.getElementById('nGrade').value;
+        const b = document.getElementById('bUps').value;
+        const c = document.getElementById('crimeInput').value;
+        
+        const res = document.getElementById('machineResult');
+        const btn = document.getElementById('nextBtn');
+        const recBox = document.getElementById('recBox');
+        const recText = document.getElementById('recText');
+        const addr = document.getElementById('addressInput').value || "this property";
+
+        const fail = (n === 'fail' || b === 'fail' || c === 'fail');
+
+        recBox.classList.remove('hidden');
+
+        if (fail) {
+            res.innerHTML = "<div class='status-box status-fail'>⚠️ REVIEW REQUIRED: Fails Brand Standards</div>";
+            recText.innerText = "DENIED: " + addr + " fails branding safety thresholds. Factors: Low Grade, High Crime, or 2+ Board-ups. EPM Exception Required.";
+            btn.classList.add('hidden');
+        } else if (n !== "") {
+            res.innerHTML = "<div class='status-box status-pass'>✅ AUTO-APPROVED: Fits Brand Standards</div>";
+            recText.innerText = "RECOMMENDED: Based on Niche grade, 0-1 board-ups, and low crime, PropertyWize strongly recommends " + addr + ". Qualifies for Premium Plan.";
+            btn.classList.remove('hidden');
+        }
+    }
+
+    // 3. PDF GENERATOR (Full Restored Version)
+// 3. PDF GENERATOR (Updated with File Logging)
+    function generateBrandedPDF() {
+        // Sync Basic Data
+        document.getElementById('pdfAgent').innerText = document.getElementById('agentInput').value || "-";
+        document.getElementById('pdfOwner').innerText = document.getElementById('ownerInput').value || "-";
+        document.getElementById('pdfAddress').innerText = document.getElementById('addressInput').value || "-";
+        document.getElementById('pdfRent').innerText = document.getElementById('rentInput').value || "0";
+        document.getElementById('pdfUnits').innerText = document.getElementById('unitsInput').value || "1";
+        document.getElementById('pdfDate').innerText = document.getElementById('intakeDate').value || new Date().toLocaleDateString();
+        document.getElementById('pdfGoal').innerText = document.getElementById('goalInput').value;
+        
+        // Sync Dropdowns
+        const nSelect = document.getElementById('nGrade');
+        document.getElementById('pdfGrade').innerText = nSelect.options[nSelect.selectedIndex].text;
+        
+        const bSelect = document.getElementById('bUps');
+        document.getElementById('pdfBU').innerText = bSelect.options[bSelect.selectedIndex].text;
+        
+        const cSelect = document.getElementById('crimeInput');
+        document.getElementById('pdfCrime').innerText = cSelect.options[cSelect.selectedIndex].text;
+        
+        document.getElementById('pdfRecText').innerText = document.getElementById('recText').innerText;
+
+        // --- NEW: CAPTURE FILENAMES ---
+        function getFileName(id) {
+            const input = document.getElementById(id);
+            if (input.files && input.files.length > 0) {
+                return "✅ " + input.files[0].name;
+            }
+            return "❌ Missing";
+        }
+        
+        // Photos need special handling for multiple files
+        const pInput = document.getElementById('fPhotos');
+        let pText = "❌ Missing";
+        if (pInput.files && pInput.files.length === 1) pText = "✅ " + pInput.files[0].name;
+        if (pInput.files && pInput.files.length > 1) pText = "✅ " + pInput.files.length + " Files Attached";
+
+        // Assign to PDF (This is the part that fills Section 3)
+        document.getElementById('pdfLogSDAT').innerText = getFileName('fSDAT');
+        document.getElementById('pdfLogRent').innerText = getFileName('fRent');
+        document.getElementById('pdfLogNiche').innerText = getFileName('fNiche');
+        document.getElementById('pdfLogCrime').innerText = getFileName('fCrime');
+        document.getElementById('pdfLogROI').innerText = getFileName('fROI');
+        document.getElementById('pdfLogRS').innerText = getFileName('fRS');
+        document.getElementById('pdfLogPhotos').innerText = pText;
+
+        // Generate PDF
+        const element = document.getElementById('qualifying-report-pdf');
+        html2pdf().set({
+            margin: 0.5,
+            filename: 'PW_Intake_Report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }).from(element).save();
+    }
+
+    // 4. MAIN NAVIGATION (Phase 1 -> 2 -> 3)
+    function showPhase(n) {
+        // HIDE EVERYTHING
+        document.getElementById('phase1').classList.add('hidden');
+        document.getElementById('phase2').classList.add('hidden');
+        document.getElementById('phase3').classList.add('hidden');
+        document.getElementById('phase4').classList.add('hidden');
+        
+        // SHOW TARGET
+        document.getElementById('phase' + n).classList.remove('hidden');
+        
+        // Data Passthrough
+        if (n === 3) {
+            document.getElementById('scriptAddr').innerText = document.getElementById('addressInput').value;
+            document.getElementById('scriptUnits').innerText = document.getElementById('unitsInput').value;
+            // Reset Demo to Step 1
+            showDemoStep(1); 
+        }
+    }
+
+    // 5. DEMO INTERNAL WIZARD (Step 1 -> 2 -> 3)
+    function showDemoStep(n) {
+        // Hide all steps
+        document.getElementById('demoStep1').classList.add('hidden');
+        document.getElementById('demoStep2').classList.add('hidden');
+        document.getElementById('demoStep3').classList.add('hidden');
+        document.getElementById('demoStep4').classList.add('hidden');
+
+        // Show specific step
+        document.getElementById('demoStep' + n).classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
