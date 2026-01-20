@@ -9,7 +9,7 @@
         :root { 
             --pw-blue: #1a4a7c; 
             --pw-green: #3d9970; 
-            --pw-gold: #ffca28;
+            --pw-gold: #ffca28; 
             --pw-red: #d9534f;
             --bg-gray: #f4f6f9;
         }
@@ -46,7 +46,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
-        .logo { max-width: 80px; height: auto; display: block; margin: 0 auto 5px auto; }
         .brand-name { color: var(--pw-blue); font-weight: 900; font-size: 22px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
 
         /* NAVIGATION LINKS */
@@ -82,7 +81,7 @@
             border-radius: 12px; 
             box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
             margin: 0 auto; 
-            max-width: 900px; /* Limits width to keep text readable */
+            max-width: 900px; 
             border-top: 5px solid var(--pw-blue);
             animation: fadeIn 0.4s ease-in-out;
         }
@@ -128,6 +127,8 @@
         .btn:hover { background: #2e7d5a; transform: translateY(-2px); }
         .btn-blue { background: var(--pw-blue); }
         .btn-blue:hover { background: #12365c; }
+        .btn-gold { background: var(--pw-gold); color: #333; }
+        .btn-gold:hover { background: #e0b120; }
         
         /* WIZARD BUTTONS */
         .btn-small { width: auto; padding: 10px 20px; display: inline-block; margin-top: 10px; font-size: 14px;}
@@ -248,6 +249,7 @@
     <a href="https://www.propertywize.com/rent-sell-calculator" target="_blank" class="report-link">6. Rent vs Sell Report</a>
     <a href="https://www.google.com/maps" target="_blank" class="report-link">7. Google Maps (Exterior)</a>
     <a href="https://www.zillow.com" target="_blank" class="report-link">8. Zillow (Interior)</a>
+    <a href="https://app.leadsimple.com/v2" target="_blank" class="report-link" style="border-top:1px solid rgba(255,255,255,0.4); margin-top:15px; background:rgba(255,255,255,0.15);">📂 Open LeadSimple</a>
 </div>
 
 <div id="main">
@@ -288,7 +290,7 @@
                         <label>Tenant Status</label>
                         <select id="onboardInput" onchange="updateFees()">
                             <option value="300">New Tenants ($300/u)</option>
-                            <option value="150">Returning <12mo ($150/u)</option>
+                            <option value="150">Inherited/Returning ($150/u)</option>
                         </select>
                     </div>
                 </div>
@@ -428,14 +430,22 @@
 
         <div id="demoStep3" class="demo-step hidden">
             <span class="step-label">Step 3: Rental Market Analysis</span>
-            <p>Refer to the <strong>Rentometer Report</strong> (Median Rent).</p>
-            <div class="script-box">
-                <p style="margin-top:0;">
-                    "Mr./Ms. Owner, looking at the data from Rentometer, the <strong>median rent</strong> for comparable properties in your area is currently projected at <strong style="background-color: #fff3cd; padding: 0 4px;">[Insert Rent Amount]</strong>."
-                </p>
-                <p style="margin-bottom:0;">
-                    "That being said, we work for <em>you</em>. If you believe your property can command a higher rate, we are absolutely willing to list it at that premium price to test the market."
-                </p>
+            
+            <div id="rentometerScript">
+                <p>Refer to the <strong>Rentometer Report</strong> (Median Rent).</p>
+                <div class="script-box">
+                    <p style="margin-top:0;">
+                        "Mr./Ms. Owner, looking at the data from Rentometer, the <strong>median rent</strong> for comparable properties in your area is currently projected at <strong style="background-color: #fff3cd; padding: 0 4px;">[Insert Rent Amount]</strong>."
+                    </p>
+                    <p style="margin-bottom:0;">
+                        "That being said, we work for <em>you</em>. If you believe your property can command a higher rate, we are absolutely willing to list it at that premium price to test the market."
+                    </p>
+                </div>
+            </div>
+
+            <div id="inheritedMsg" class="hidden" style="background:#e3f2fd; padding:15px; border-left:5px solid #2196f3; margin-bottom:20px;">
+                <strong>ℹ️ INHERITED TENANT DETECTED:</strong> <br>
+                Rentometer Market Analysis has been skipped. Please proceed directly to Common Questions/FAQ.
             </div>
             
             <p style="margin-top:15px;">
@@ -453,7 +463,7 @@
             
             <div class="script-box" style="background-color: #fff8e1; font-size: 18px;">
                 <p style="margin-top:0;">
-                    "Mr./Ms. Owner, honestly, looking at this asset, I want to make sure you sleep easy at night. My strongest recommendation is the <strong>Premium Plan</strong> because it essentially <strong>insures your rental income</strong>, shifting the risk of tenant default off your shoulders."
+                    "Mr./Ms. <strong id="scriptOwnerClose" style="color:#1a4a7c; text-decoration:underline;">Owner</strong>, honestly, looking at this asset, I want to make sure you sleep easy at night. My strongest recommendation is the <strong>Premium Plan</strong> because it essentially <strong>insures your rental income</strong>, shifting the risk of tenant default off your shoulders."
                 </p>
 
                 <p>
@@ -472,8 +482,6 @@
                 </p>
             </div>
 
-   
-
             <div class="demo-nav">
                 <button class="btn btn-small btn-back" onclick="showDemoStep(3)">⬅ Back</button>
                 <button class="btn btn-small" style="background-color: #27ae60;" onclick="showPhase(4)">Finish Demo ✅</button>
@@ -486,6 +494,12 @@
         <div style="text-align:center; padding: 20px;">
             <h1>🎉 GREAT JOB!</h1>
             <p>Please submit your Quality Control details below.</p>
+        </div>
+        
+        <div style="text-align:center; margin-bottom:20px;">
+            <a href="https://drive.google.com/file/d/1D3H8pw3vaw-nk8TVa1dTRZ9o-eCIycTj/view" target="_blank" class="btn btn-gold" style="width:auto; padding:10px 20px; text-decoration:none; display:inline-block;">
+                📄 OPEN SOP: Sending PM Agreement (DocuSign)
+            </a>
         </div>
         
         <label>1. Google Meet Recording URL</label>
@@ -598,14 +612,13 @@
 </div>
 
 <script>
-    /// 1. DYNAMIC FEE CALCULATOR (Updated to Feed the Script & Fix Double Charge)
+    /// 1. DYNAMIC FEE CALCULATOR
     function updateFees() {
         const u = parseInt(document.getElementById('unitsInput').value) || 0;
         const r = parseFloat(document.getElementById('rentInput').value) || 0; // Treated as TOTAL Rent
         const j = document.getElementById('jurisdiction').value;
         const obRate = parseInt(document.getElementById('onboardInput').value) || 300;
         
-        // --- 1. DETERMINE PERCENTAGE RATES ---
         // Base Rates
         let sRate = 0.10; // Default Standard City
         let pRate = 0.12; // Default Premium City
@@ -616,7 +629,6 @@
         }
 
         // Rolling Fee Schedule (Discounts for Multi-Unit)
-        // If 2 Units, drop 1%. If 3+ Units, drop 2%
         if (u === 2) {
             sRate -= 0.01; // 9% City / 7% County
             pRate -= 0.01; // 11% City / 9% County
@@ -625,8 +637,7 @@
             pRate -= 0.02; // 10% City / 8% County
         }
         
-        // --- 2. CALCULATE TOTALS ---
-        // FIX: We do NOT multiply by 'u' here because 'r' is the Total Rent Roll
+        // Calculate Totals
         const stdTotal = (r * sRate); 
         const premTotal = (r * pRate);
         
@@ -644,7 +655,6 @@
         document.getElementById('onboardDisplay').innerText = "$" + onboarding.toFixed(0);
 
         // Update Closing Script Text (Step 4)
-        // Convert decimals (0.10) to percentages (10%)
         document.getElementById('closeStdPct').innerText = (sRate * 100).toFixed(0) + "%";
         document.getElementById('closeStdDol').innerText = "$" + stdTotal.toFixed(2);
         document.getElementById('closePremPct').innerText = (pRate * 100).toFixed(0) + "%";
@@ -684,7 +694,7 @@
         }
     }
 
-    // 3. PDF GENERATOR (Updated with File Logging and Fee Quote)
+    // 3. PDF GENERATOR
     function generateBrandedPDF() {
         // Sync Basic Data
         document.getElementById('pdfAgent').innerText = document.getElementById('agentInput').value || "-";
@@ -698,31 +708,26 @@
         // Sync Dropdowns
         const nSelect = document.getElementById('nGrade');
         document.getElementById('pdfGrade').innerText = nSelect.options[nSelect.selectedIndex].text;
-        
         const bSelect = document.getElementById('bUps');
         document.getElementById('pdfBU').innerText = bSelect.options[bSelect.selectedIndex].text;
-        
         const cSelect = document.getElementById('crimeInput');
         document.getElementById('pdfCrime').innerText = cSelect.options[cSelect.selectedIndex].text;
-        
         document.getElementById('pdfRecText').innerText = document.getElementById('recText').innerText;
 
-        // --- NEW: CAPTURE FILENAMES ---
+        // Capture Filenames
         function getFileName(id) {
             const input = document.getElementById(id);
-            if (input.files && input.files.length > 0) {
-                return "✅ " + input.files[0].name;
-            }
+            if (input.files && input.files.length > 0) return "✅ " + input.files[0].name;
             return "❌ Missing";
         }
         
-        // Photos need special handling for multiple files
+        // Photos need special handling
         const pInput = document.getElementById('fPhotos');
         let pText = "❌ Missing";
         if (pInput.files && pInput.files.length === 1) pText = "✅ " + pInput.files[0].name;
         if (pInput.files && pInput.files.length > 1) pText = "✅ " + pInput.files.length + " Files Attached";
 
-        // Assign to PDF (This is the part that fills Section 3)
+        // Assign to PDF
         document.getElementById('pdfLogSDAT').innerText = getFileName('fSDAT');
         document.getElementById('pdfLogRent').innerText = getFileName('fRent');
         document.getElementById('pdfLogNiche').innerText = getFileName('fNiche');
@@ -731,7 +736,7 @@
         document.getElementById('pdfLogRS').innerText = getFileName('fRS');
         document.getElementById('pdfLogPhotos').innerText = pText;
 
-        // --- NEW: TRANSFER FEE QUOTES TO PDF ---
+        // Fee Quotes
         document.getElementById('pdfStdPct').innerText = document.getElementById('closeStdPct').innerText;
         document.getElementById('pdfStdDol').innerText = document.getElementById('closeStdDol').innerText;
         document.getElementById('pdfPremPct').innerText = document.getElementById('closePremPct').innerText;
@@ -759,10 +764,16 @@
         // SHOW TARGET
         document.getElementById('phase' + n).classList.remove('hidden');
         
-        // Data Passthrough
+        // Data Passthrough for Phase 3
         if (n === 3) {
             document.getElementById('scriptAddr').innerText = document.getElementById('addressInput').value;
             document.getElementById('scriptUnits').innerText = document.getElementById('unitsInput').value;
+            
+            // Extract Owner Last Name for Closing Script
+            const fullOwner = document.getElementById('ownerInput').value || "Owner";
+            const lastName = fullOwner.split(' ').pop(); // Takes the last word (e.g. Fox from Palestine Fox)
+            document.getElementById('scriptOwnerClose').innerText = lastName;
+
             // Reset Demo to Step 1
             showDemoStep(1); 
         }
@@ -778,6 +789,22 @@
 
         // Show specific step
         document.getElementById('demoStep' + n).classList.remove('hidden');
+
+        // Logic Check for Inherited Tenants in Step 3
+        if (n === 3) {
+            const onboardVal = document.getElementById('onboardInput').value;
+            const rentScript = document.getElementById('rentometerScript');
+            const inheritedMsg = document.getElementById('inheritedMsg');
+            
+            // If value is 150 (Inherited/Returning), Hide Rentometer Script
+            if (onboardVal === "150") {
+                rentScript.classList.add('hidden');
+                inheritedMsg.classList.remove('hidden');
+            } else {
+                rentScript.classList.remove('hidden');
+                inheritedMsg.classList.add('hidden');
+            }
+        }
     }
 </script>
 </body>
