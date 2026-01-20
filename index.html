@@ -196,7 +196,7 @@
 <div id="sidebar">
     <div class="logo-box">
         <h1 class="brand-name">PropertyWize</h1>
-        </div>
+    </div>
 
     <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.15);">
         <div style="font-size: 11px; text-transform: uppercase; color: #bdc3c7; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;">
@@ -214,6 +214,31 @@
         </div>
     </div>
 
+    <div class="fee-calc">
+        <div style="font-size: 11px; text-transform: uppercase; color: #bdc3c7; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;">
+            Live Fee Calculator
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span style="font-size:12px; color:#ddd;">Std. Monthly:</span>
+            <strong id="stdDisplay" style="color:white; font-size:14px;">$0.00</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:5px;">
+            <span style="font-size:12px; color:#ddd;">Prem. Monthly:</span>
+            <strong id="premDisplay" style="color:#2ecc71; font-size:14px;">$0.00</strong>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span style="font-size:11px; color:#aaa;">Annualized (Base):</span>
+            <span id="annualDisplay" style="color:#fff; font-weight:bold; font-size:12px;">$0.00</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+            <span style="font-size:11px; color:#aaa;">Onboarding Fee:</span>
+            <span id="onboardDisplay" style="color:#ffca28; font-weight:bold; font-size:12px;">$0.00</span>
+        </div>
+    </div>
+
     <h3 style="color:white; margin-bottom:10px; border: none;">Research Sequence</h3>
     <a href="https://sdat.dat.maryland.gov/RealProperty/" target="_blank" class="report-link">1. SDAT Real Property Search</a>
     <a href="https://www.rentometer.com" target="_blank" class="report-link">2. Rentometer (Record Median)</a>
@@ -223,17 +248,6 @@
     <a href="https://www.propertywize.com/rent-sell-calculator" target="_blank" class="report-link">6. Rent vs Sell Report</a>
     <a href="https://www.google.com/maps" target="_blank" class="report-link">7. Google Maps (Exterior)</a>
     <a href="https://www.zillow.com" target="_blank" class="report-link">8. Zillow (Interior)</a>
-
-    <div class="fee-calc">
-        <strong>Management Fee Quote</strong>
-        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-            <span>Standard:</span> <span id="stdDisplay">$0.00</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; color:var(--pw-green); font-weight:bold;">
-            <span>Premium:</span> <span id="premDisplay">$0.00</span>
-        </div>
-        <p style="font-size:11px; margin-top:10px; line-height:1.4;">*Premium includes <strong>2-mo rent guarantee</strong>.</p>
-    </div>
 </div>
 
 <div id="main">
@@ -260,13 +274,24 @@
             </div>
             <div>
                 <label>Property Address (Exact SDAT Match)</label>
-                <input type="text" id="addressInput" placeholder="e.g. 414 Water St Apt 2913 Baltimore, Md 21202">
+                <input type="text" id="addressInput" placeholder="e.g. 414 Water St Apt 2913">
                 
-                <label>Rentometer Median Rent</label>
-                <input type="number" id="rentInput" placeholder="2100" oninput="updateFees()">
+                <label>Total Monthly Rent (Sum of ALL Units)</label>
+                <input type="number" id="rentInput" placeholder="e.g. 2395 (Total for Duplex)" oninput="updateFees()">
                 
-                <label>Total Units</label>
-                <input type="number" id="unitsInput" value="1" oninput="updateFees()">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label>Total Units</label>
+                        <input type="number" id="unitsInput" value="1" oninput="updateFees()">
+                    </div>
+                    <div style="flex:1;">
+                        <label>Tenant Status</label>
+                        <select id="onboardInput" onchange="updateFees()">
+                            <option value="300">New Tenants ($300/u)</option>
+                            <option value="150">Returning <12mo ($150/u)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -343,7 +368,7 @@
         </div>
         <div class="checklist-item">
             <input type="checkbox"> 
-            <span><strong>Demo Buffer:</strong> Open 10-Min Demo Video in a new tab and let it buffer.</span> <a href="https://drive.google.com/file/d/1sYIT1XfoUvqyt8Txsp0adYPwXfV5wTSt/view" target="_blank" style="color:#1a4a7c; text-decoration:underline;">Demo Video</a>.</span>
+            <span><strong>Demo Buffer:</strong> Open 10-Min Demo Video in a new tab and let it buffer. <a href="https://drive.google.com/file/d/1sYIT1XfoUvqyt8Txsp0adYPwXfV5wTSt/view" target="_blank" style="color:#1a4a7c; text-decoration:underline;">Demo Video</a>.</span>
         </div>
         <div class="checklist-item">
 		    <input type="checkbox">
@@ -351,14 +376,14 @@
 		</div>
         <div class="checklist-item">
             <input type="checkbox"> 
-            <span><strong>LeadSimple Status:</strong> Confirm lead status is set to "Meeting Scheduled".<a href="https://app.leadsimple.com/v2" target="_blank" style="color:#1a4a7c; text-decoration:underline;">LeadSimple</a>.</span>
-		</div></span>
-        </div>
+            <span><strong>LeadSimple Status:</strong> Confirm lead status is set to "Meeting Scheduled". <a href="https://app.leadsimple.com/v2" target="_blank" style="color:#1a4a7c; text-decoration:underline;">LeadSimple</a>.</span>
+		</div>
 
         <div style="display:flex; gap:10px;">
             <button class="btn btn-back" style="background:#888;" onclick="showPhase(1)">Back</button>
             <button class="btn" onclick="showPhase(3)">START PHASE 3: LIVE DEMO</button>
         </div>
+    </div>
 
 
     <div id="phase3" class="card hidden">
@@ -542,7 +567,26 @@
             </tr>
         </table>
 
-        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:15px; font-size:14px;">4. OFFICIAL RECOMMENDATION</h3>
+        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:15px; font-size:14px;">4. MANAGEMENT FEE QUOTE</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:30px; font-size:14px;">
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;">
+                    <strong>Standard Plan (<span id="pdfStdPct">--%</span>):</strong> 
+                    <span id="pdfStdDol">$0.00</span> /mo
+                </td>
+                <td style="padding:8px; border-bottom:1px solid #eee; color:#155724; background-color:#d4edda; font-weight:bold; border-radius:4px;">
+                    <strong>Premium Plan (<span id="pdfPremPct">--%</span>):</strong> 
+                    <span id="pdfPremDol">$0.00</span> /mo
+                </td>
+            </tr>
+            <tr>
+                 <td colspan="2" style="padding:5px; font-size:11px; color:#666; font-style:italic;">
+                    *Premium includes 2-Month Rent Guarantee protection.
+                </td>
+            </tr>
+        </table>
+
+        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:15px; font-size:14px;">5. OFFICIAL RECOMMENDATION</h3>
         <div style="background:#f4f6f9; padding:20px; border-left:5px solid #1a4a7c; border-radius:4px;">
             <p id="pdfRecText" style="margin:0; font-weight:bold; line-height:1.5;">[Recommendation will appear here]</p>
         </div>
@@ -554,37 +598,63 @@
 </div>
 
 <script>
-    /// 1. DYNAMIC FEE CALCULATOR (Updated to Feed the Script)
+    /// 1. DYNAMIC FEE CALCULATOR (Updated to Feed the Script & Fix Double Charge)
     function updateFees() {
         const u = parseInt(document.getElementById('unitsInput').value) || 0;
-        const r = parseFloat(document.getElementById('rentInput').value) || 0;
+        const r = parseFloat(document.getElementById('rentInput').value) || 0; // Treated as TOTAL Rent
         const j = document.getElementById('jurisdiction').value;
+        const obRate = parseInt(document.getElementById('onboardInput').value) || 300;
         
+        // --- 1. DETERMINE PERCENTAGE RATES ---
         // Base Rates
-        let sRate = (j === "City") ? 0.10 : 0.08;
-        let pRate = (j === "City") ? 0.12 : 0.10;
-        
-        // Multi-Unit Discount Logic
-        if (u >= 2) { 
-            sRate -= 0.01; 
-            pRate -= 0.01; 
-        } 
-        
-        // Calculate Totals
-        const stdTotal = (u * r * sRate).toFixed(2);
-        const premTotal = (u * r * pRate).toFixed(2);
+        let sRate = 0.10; // Default Standard City
+        let pRate = 0.12; // Default Premium City
 
-        // Update Sidebar Calculator
-        document.getElementById('stdDisplay').innerText = "$" + stdTotal;
-        document.getElementById('premDisplay').innerText = "$" + premTotal;
+        if (j === "County") {
+            sRate = 0.08;
+            pRate = 0.10;
+        }
+
+        // Rolling Fee Schedule (Discounts for Multi-Unit)
+        // If 2 Units, drop 1%. If 3+ Units, drop 2%
+        if (u === 2) {
+            sRate -= 0.01; // 9% City / 7% County
+            pRate -= 0.01; // 11% City / 9% County
+        } else if (u >= 3) {
+            sRate -= 0.02; // 8% City / 6% County
+            pRate -= 0.02; // 10% City / 8% County
+        }
+        
+        // --- 2. CALCULATE TOTALS ---
+        // FIX: We do NOT multiply by 'u' here because 'r' is the Total Rent Roll
+        const stdTotal = (r * sRate); 
+        const premTotal = (r * pRate);
+        
+        // Annualized (Base Rate x 12)
+        const annualized = stdTotal * 12;
+
+        // Onboarding (Rate x Units)
+        const onboarding = u * obRate;
+
+        // --- 3. UPDATE UI ---
+        // Sidebar
+        document.getElementById('stdDisplay').innerText = "$" + stdTotal.toFixed(2);
+        document.getElementById('premDisplay').innerText = "$" + premTotal.toFixed(2);
+        document.getElementById('annualDisplay').innerText = "$" + annualized.toFixed(2);
+        document.getElementById('onboardDisplay').innerText = "$" + onboarding.toFixed(0);
 
         // Update Closing Script Text (Step 4)
         // Convert decimals (0.10) to percentages (10%)
         document.getElementById('closeStdPct').innerText = (sRate * 100).toFixed(0) + "%";
-        document.getElementById('closeStdDol').innerText = "$" + stdTotal;
-        
+        document.getElementById('closeStdDol').innerText = "$" + stdTotal.toFixed(2);
         document.getElementById('closePremPct').innerText = (pRate * 100).toFixed(0) + "%";
-        document.getElementById('closePremDol').innerText = "$" + premTotal;
+        document.getElementById('closePremDol').innerText = "$" + premTotal.toFixed(2);
+
+        // Update Hidden PDF Fields
+        document.getElementById('pdfStdPct').innerText = (sRate * 100).toFixed(0) + "%";
+        document.getElementById('pdfStdDol').innerText = "$" + stdTotal.toFixed(2);
+        document.getElementById('pdfPremPct').innerText = (pRate * 100).toFixed(0) + "%";
+        document.getElementById('pdfPremDol').innerText = "$" + premTotal.toFixed(2);
     }
 
     // 2. QUALIFICATION ENGINE
@@ -614,8 +684,7 @@
         }
     }
 
-    // 3. PDF GENERATOR (Full Restored Version)
-// 3. PDF GENERATOR (Updated with File Logging)
+    // 3. PDF GENERATOR (Updated with File Logging and Fee Quote)
     function generateBrandedPDF() {
         // Sync Basic Data
         document.getElementById('pdfAgent').innerText = document.getElementById('agentInput').value || "-";
@@ -661,6 +730,12 @@
         document.getElementById('pdfLogROI').innerText = getFileName('fROI');
         document.getElementById('pdfLogRS').innerText = getFileName('fRS');
         document.getElementById('pdfLogPhotos').innerText = pText;
+
+        // --- NEW: TRANSFER FEE QUOTES TO PDF ---
+        document.getElementById('pdfStdPct').innerText = document.getElementById('closeStdPct').innerText;
+        document.getElementById('pdfStdDol').innerText = document.getElementById('closeStdDol').innerText;
+        document.getElementById('pdfPremPct').innerText = document.getElementById('closePremPct').innerText;
+        document.getElementById('pdfPremDol').innerText = document.getElementById('closePremDol').innerText;
 
         // Generate PDF
         const element = document.getElementById('qualifying-report-pdf');
