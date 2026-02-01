@@ -1,15 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PropertyWize Sales Engine</title>
+    <title>PropertyWize Sales Engine | End-to-End Co-Pilot</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* --- BRAND COLORS --- */
+        /* BRAND COLORS */
         :root { 
             --pw-blue: #1a4a7c; 
             --pw-green: #3d9970; 
             --pw-gold: #ffca28; 
+            --pw-red: #d9534f;
             --bg-gray: #f4f6f9;
         }
 
@@ -17,170 +19,197 @@
             font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; 
             background: var(--bg-gray); 
             margin: 0; 
-            padding: 0;
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
         }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR (Fixed Layout) --- */
         #sidebar { 
-            width: 340px; 
+            width: 320px; 
+            min-width: 320px;
             background: var(--pw-blue); 
             color: white; 
-            padding: 25px; 
+            padding: 20px; 
             height: 100vh; 
             position: fixed; 
-            top: 0;
-            left: 0;
             overflow-y: auto; 
-            box-shadow: 4px 0 15px rgba(0,0,0,0.2); 
-            z-index: 1000;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1); 
+            z-index: 100;
+            box-sizing: border-box;
         }
+        
+        #sidebar::-webkit-scrollbar { width: 8px; }
+        #sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
-        /* --- MAIN CONTENT (FULL WIDTH) --- */
+        .logo-box { 
+            background: white; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .brand-name { color: var(--pw-blue); font-weight: 900; font-size: 20px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        .report-link { 
+            display: flex; 
+            align-items: center;
+            background: rgba(255,255,255,0.1); 
+            color: white; 
+            padding: 10px; 
+            margin: 6px 0; 
+            border-radius: 6px; 
+            text-decoration: none; 
+            font-size: 13px; 
+            transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .report-link:hover { background: var(--pw-green); border-color: var(--pw-green); transform: translateX(5px); }
+
+        /* MAIN CONTENT */
         #main { 
-            margin-left: 340px; /* Matches sidebar width */
+            margin-left: 320px; 
             padding: 40px; 
-            min-height: 100vh;
+            width: 100%; 
+            overflow-y: auto; 
+            height: 100vh;
             box-sizing: border-box;
             background: #eef2f5;
         }
 
-        /* Logo Box */
-        .logo-box { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 25px; 
-            text-align: center; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 60px;
-        }
-        
-        .logo-text {
-            color: var(--pw-blue);
-            font-weight: 900;
-            font-size: 24px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-        }
-
-        /* FEE CALCULATOR */
-        .fee-calc { 
-            background: rgba(0,0,0,0.25); 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-        
-        .fee-header {
-            font-size: 11px; 
-            text-transform: uppercase; 
-            color: #bdc3c7; 
-            margin-bottom: 12px; 
-            font-weight: 700; 
-            letter-spacing: 1px;
-        }
-
-        .fee-row { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center; }
-        .fee-label { font-size: 12px; color: #eee; }
-        .fee-val { font-size: 14px; color: white; font-weight: 700; }
-        .fee-val.green { color: #2ecc71; }
-        .fee-val.gold { color: #ffca28; }
-
-        /* SIDEBAR BUTTONS */
-        .sidebar-btn {
-            background: var(--pw-gold);
-            color: #2c3e50;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 5px;
-            font-weight: 800;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 12px;
-            text-transform: uppercase;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        .sidebar-btn:hover { background: #e0b120; transform: translateY(-1px); }
-        
-        .sidebar-btn-sec {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .sidebar-btn-sec:hover { background: rgba(255,255,255,0.25); }
-
-        /* LINKS */
-        h3.sidebar-heading { color: white; margin-top: 30px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
-        
-        .report-link { 
-            display: flex; align-items: center; background: rgba(255,255,255,0.08); color: white; 
-            padding: 10px 12px; margin: 6px 0; border-radius: 5px; text-decoration: none; 
-            font-size: 13px; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .report-link:hover { background: var(--pw-green); border-color: var(--pw-green); transform: translateX(3px); }
-
-        /* CARD STYLES */
         .card { 
             background: white; 
-            padding: 40px; 
+            padding: 50px; 
             border-radius: 12px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+            margin: 0 auto; 
             max-width: 900px; 
-            margin: 0 auto 40px auto;
             border-top: 5px solid var(--pw-blue);
+            animation: fadeIn 0.4s ease-in-out;
         }
 
         .hidden { display: none !important; }
 
-        /* INPUTS */
+        h2 { color: var(--pw-blue); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        h3 { color: #555; margin-top: 25px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
+        
         label { display: block; font-weight: 600; font-size: 13px; color: #444; margin-bottom: 5px; }
-        input, select { 
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; 
-            font-size: 14px; background: #fafafa; box-sizing: border-box;
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            background: #fafafa;
+            box-sizing: border-box;
         }
         input:focus, select:focus { border-color: var(--pw-blue); background: white; outline: none; }
 
-        /* BUTTONS (MAIN) */
+        /* BUTTONS */
         .btn { 
-            background: var(--pw-green); color: white; border: none; padding: 16px; border-radius: 6px; 
-            cursor: pointer; font-weight: 800; width: 100%; margin-top: 20px; font-size: 15px; 
-            text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: var(--pw-green); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 800; 
+            width: 100%; 
+            margin-top: 20px; 
+            font-size: 16px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
         }
         .btn:hover { background: #2e7d5a; transform: translateY(-2px); }
         .btn-blue { background: var(--pw-blue); }
         .btn-blue:hover { background: #12365c; }
-        .btn-back { background: #7f8c8d; }
+        .btn-gold { background: var(--pw-gold); color: #333; }
+        .btn-gold:hover { background: #e0b120; }
+        
         .btn-small { width: auto; padding: 10px 20px; display: inline-block; margin-top: 10px; font-size: 14px;}
+        .btn-back { background: #7f8c8d; }
+        .demo-nav { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; }
 
-        /* --- PDF TEMPLATES (HIDDEN OFF-SCREEN) --- */
-        /* We use fixed positioning off-screen instead of display:none so html2pdf can render them */
-        #templates-container {
-            position: fixed;
-            top: 0;
-            left: -9999px;
-            width: 750px;
-            z-index: -1;
+        /* FEE CALCULATOR BOX */
+        .fee-calc { 
+            background: rgba(0,0,0,0.2); 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .fee-calc strong { display: block; font-size: 18px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; }
+
+        /* EMAIL BUTTON */
+        .btn-email {
+            background: var(--pw-gold);
+            color: #333;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 15px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .btn-email:hover { background: #e0b120; }
+
+        /* SCRIPT BOXES */
+        .script-box { 
+            background: #fff8e1; 
+            border: 1px solid #ffe082; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            font-style: italic; 
+            color: #5d4037; 
+            line-height: 1.6;
+            font-size: 18px;
+        }
+        .step-label { 
+            background: var(--pw-blue); 
+            color: white; 
+            padding: 8px 12px; 
+            border-radius: 4px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            margin-bottom: 15px; 
+            display: inline-block;
         }
 
-        .checklist-item { display: flex; align-items: center; background: #eef2f7; padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid var(--pw-blue); }
+        .checklist-item { 
+            display: flex; 
+            align-items: center; 
+            background: #eef2f7; 
+            padding: 15px; 
+            margin-bottom: 10px; 
+            border-radius: 6px; 
+            border-left: 5px solid var(--pw-blue); 
+        }
         .checklist-item input { width: 20px; height: 20px; margin-right: 15px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
     <div class="logo-box">
-        <img src="Pw logo (1).png" alt="PROPERTYWIZE" style="max-width: 100%; height: auto; display: block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <h1 class="logo-text" style="display:none;">PROPERTYWIZE</h1>
+        <h1 class="brand-name">PropertyWize</h1>
     </div>
 
     <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.15);">
@@ -200,35 +229,38 @@
     </div>
 
     <div class="fee-calc">
-        <div class="fee-header">Live Fee Calculator</div>
-        
-        <div class="fee-row">
-            <span class="fee-label">Std. Monthly:</span>
-            <span class="fee-val" id="stdDisplay">$0.00</span>
+        <div style="font-size: 11px; text-transform: uppercase; color: #bdc3c7; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;">
+            Live Fee Calculator
         </div>
-        <div class="fee-row" style="margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:5px;">
-            <span class="fee-label">Prem. Monthly:</span>
-            <span class="fee-val green" id="premDisplay">$0.00</span>
+        
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span style="font-size:12px; color:#ddd;">Std. Monthly:</span>
+            <strong id="stdDisplay" style="color:white; font-size:14px;">$0.00</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:5px;">
+            <span style="font-size:12px; color:#ddd;">Prem. Monthly:</span>
+            <strong id="premDisplay" style="color:#2ecc71; font-size:14px;">$0.00</strong>
         </div>
 
-        <div class="fee-row">
-            <span class="fee-label">Reserve (Ref):</span>
-            <span class="fee-val" id="reserveDisplay">$0.00</span>
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span style="font-size:11px; color:#aaa;">Reserve (Ref):</span>
+            <span id="reserveDisplay" style="color:#fff; font-weight:bold; font-size:12px;">$0.00</span>
         </div>
-        <div class="fee-row">
-            <span class="fee-label">Onboarding:</span>
-            <span class="fee-val gold" id="onboardDisplay">$0.00</span>
+
+        <div style="display:flex; justify-content:space-between;">
+            <span style="font-size:11px; color:#aaa;">Onboarding:</span>
+            <span id="onboardDisplay" style="color:#ffca28; font-weight:bold; font-size:12px;">$0.00</span>
         </div>
-        
         <div style="text-align:right; margin-top:5px;">
              <span id="feeTierDisplay" style="font-size:9px; color:#aaa; font-style:italic;">Standard Tier</span>
         </div>
 
-        <button class="sidebar-btn" onclick="generateProposalPDF()">📄 Generate Executive Proposal</button>
-        <button class="sidebar-btn sidebar-btn-sec" onclick="openProposalEmail()">📧 Open Proposal Email</button>
+        <button class="btn-email" onclick="copyEmailTemplate()">📄 Copy Email Quote</button>
+
+<button class="btn-email" onclick="generateProposalPDF()">📑 Generate Proposal</button>
     </div>
 
-    <h3 class="sidebar-heading">Research Sequence</h3>
+    <h3 style="color:white; margin-bottom:10px; border: none; font-size: 12px; margin-top:20px;">Research Sequence</h3>
     <a href="https://sdat.dat.maryland.gov/RealProperty/" target="_blank" class="report-link">1. SDAT Real Property</a>
     <a href="https://www.rentometer.com" target="_blank" class="report-link">2. Rentometer (Median)</a>
     <a href="https://www.niche.com" target="_blank" class="report-link">3. Niche Grade</a>
@@ -243,14 +275,19 @@
 <div id="main">
     
     <div id="phase1" class="card">
-        <h2 style="color:#1a4a7c; border-bottom:2px solid #eee; padding-bottom:15px;">Phase 1: Property Qualification & Intake</h2>
+        <h2>Phase 1: Property Qualification & Intake</h2>
         
         <div class="grid">
             <div>
                 <label>Assigned Sales Agent</label>
                 <input type="text" id="agentInput" placeholder="e.g. Vonn, Nicole">
+                
+                <label>EPM Assigned</label>
+                <input type="text" id="epmInput" placeholder="e.g. Shanicka, Michelle">
+                
                 <label>Legal Owner Name (Exact SDAT Match)</label>
                 <input type="text" id="ownerInput" placeholder="e.g. PALESTINE FOX">
+                
                 <label>Jurisdiction (Affects Fee Quote)</label>
                 <select id="jurisdiction" onchange="updateFees()">
                     <option value="City">Baltimore City</option>
@@ -259,17 +296,18 @@
             </div>
             <div>
                 <label>Property Address (Exact SDAT Match)</label>
-                <input type="text" id="addressInput" placeholder="e.g. 1458 Greenbriar Circle">
-                <label>Total Monthly Rent (Sum of ALL Units)</label>
-                <input type="number" id="rentInput" placeholder="e.g. 2395" oninput="updateFees()">
+                <input type="text" id="addressInput" placeholder="e.g. 414 Water St Apt 2913">
                 
-                <div style="display:flex; gap:10px; margin-top:10px;">
+                <label>Total Monthly Rent (Sum of ALL Units)</label>
+                <input type="number" id="rentInput" placeholder="e.g. 2395 (Total for Duplex)" oninput="updateFees()">
+                
+                <div style="display:flex; gap:10px;">
                     <div style="flex:1;">
                         <label>Units Enrolling</label>
                         <input type="number" id="unitsInput" value="1" min="1" oninput="updateFees()">
                     </div>
                     <div style="flex:1;">
-                        <label>Occupancy</label>
+                        <label>Occupancy Status</label>
                         <select id="occupancyInput" onchange="updateFees()">
                             <option value="Occupied">Occupied (Inherited)</option>
                             <option value="Vacant">Vacant (No Onboarding Fee)</option>
@@ -290,10 +328,11 @@
                         </select>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+        <hr>
 
         <h3>Singular Research Metrics (Pass/Fail)</h3>
         <div class="grid">
@@ -306,7 +345,8 @@
                     <option value="C+">C+</option>
                     <option value="fail">C</option><option value="fail">D</option><option value="fail">F</option>
                 </select>
-                <label>Crime Stats</label>
+                
+                <label>Crime Stats (Map Verification)</label>
                 <select id="crimeInput" onchange="runLogic()">
                     <option value="Low">Low Crime</option>
                     <option value="Moderate">Moderate Crime</option>
@@ -321,6 +361,7 @@
                     <option value="fail">2 Board-ups (FAIL)</option>
                     <option value="fail">3 or more (FAIL)</option>
                 </select>
+                
                 <label>Intake Date</label>
                 <input type="date" id="intakeDate">
             </div>
@@ -355,175 +396,210 @@
     </div>
 
     <div id="phase2" class="card hidden">
-        <h2 style="color:#1a4a7c;">Phase 2: Mandatory Prep</h2>
-        <div class="checklist-item"><input type="checkbox"> <span><strong>Tech Set Up:</strong> Join Google Meet, Enable Recording.</span></div>
-        <div class="checklist-item"><input type="checkbox"> <span><strong>Demo Buffer:</strong> Load Video.</span></div>
-        <div class="checklist-item"><input type="checkbox"> <span><strong>Handbook Ready:</strong> Open FlipSnack.</span></div>
-        <div class="checklist-item"><input type="checkbox"> <span><strong>LeadSimple Status:</strong> "Meeting Scheduled".</span></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-back" style="width:auto;" onclick="showPhase(1)">Back</button>
-            <button class="btn" style="width:auto;" onclick="showPhase(3)">START PHASE 3: LIVE DEMO</button>
+        <h2>Phase 2: Mandatory Prep (30 Mins Before Demo)</h2>
+        <p style="color:#666;">Complete this checklist before the start of the Google Meet call.</p>
+        
+        <div class="checklist-item">
+            <input type="checkbox"> <span><strong>Tech Set Up:</strong> Join Google Meet, Enable Recording/Notetaker.</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span><strong>Demo Buffer:</strong> Load Video.</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span><strong>Handbook Ready:</strong> Open FlipSnack.</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span><strong>LeadSimple Status:</strong> "Meeting Scheduled".</span>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-back" style="background:#888;" onclick="showPhase(1)">Back</button>
+            <button class="btn" onclick="showPhase(3)">START PHASE 3: LIVE DEMO</button>
         </div>
     </div>
+
 
     <div id="phase3" class="card hidden">
-        <h2 style="color:#1a4a7c;">Phase 3: Live Demo Co-Pilot</h2>
-        <div id="demoStep1">
-            <div style="background:#fff8e1; border:1px solid #ffe082; padding:20px; margin-bottom:20px;">
-                <p><strong>Script:</strong> "Hi [Owner], I'm [Your Name] with PropertyWize..."</p>
-            </div>
-            <button class="btn btn-blue" onclick="showDemoStep(2)">Next: Video ➡</button>
-        </div>
-        <div id="demoStep2" class="hidden">
-            <p>Play 10-Min Video.</p>
-            <button class="btn btn-blue" onclick="showDemoStep(3)">Next: Market Analysis ➡</button>
-        </div>
-        <div id="demoStep3" class="hidden">
-            <p>Review Rentometer Data.</p>
-            <button class="btn btn-blue" onclick="showDemoStep(4)">Next: Closing ➡</button>
-        </div>
-        <div id="demoStep4" class="hidden">
-            <p><strong>Close:</strong> Recommend Premium Plan.</p>
-            <button class="btn" style="background:#2ecc71;" onclick="showPhase(4)">Finish Demo ✅</button>
-        </div>
-    </div>
-
-    <div id="phase4" class="card hidden">
-        <h2 style="color:#2ecc71;">Phase 4: Demo Completed</h2>
-        <div style="text-align:center; padding:30px;">
-            <h1>🎉 GREAT JOB!</h1>
-            <p>Log your call below.</p>
-        </div>
-        <label>Google Meet URL</label>
-        <input type="text">
-        <button class="btn btn-blue" onclick="alert('Submitted!')">SUBMIT</button>
-        <button class="btn btn-back" onclick="showPhase(1)">Start New Lead</button>
-    </div>
-</div>
-
-<div id="templates-container">
-
-    <div id="proposal-pdf" style="width: 750px; padding: 30px; background: white; font-family: 'Segoe UI', sans-serif; box-sizing: border-box; color:#333;">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 3px solid #1a4a7c;">
-            <div style="display:flex; align-items:center; gap: 15px;">
-                <img src="Pw logo (1).png" alt="" style="height: 60px; display: block;">
-                <span style="font-weight:900; color:#1a4a7c; font-size:32px; letter-spacing:1px; line-height:1;">PROPERTYWIZE</span>
-            </div>
-            <div style="text-align: right;">
-                <h2 style="color: #1a4a7c; margin: 0; font-size: 18px; text-transform: uppercase;">Management Proposal</h2>
-                <div style="margin-top: 5px; font-size: 12px; color: #555;">
-                    <span id="propDate1">Date</span> | Prepared for: <strong><span id="propOwner1">Client</span></strong>
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top: 20px;">
-            <p style="font-size: 12px; line-height: 1.4; margin-bottom: 15px;">
-                <strong>Property:</strong> <span id="propAddress1" style="color:#1a4a7c; font-weight:bold;">Address</span><br>
-                Thank you for considering PropertyWize. We have operated in excellence for over 10 years, and our owner-operators bring more than 30 years of combined experience to the table. We don't just collect rent; we engineer peace of mind.
-            </p>
-
-            <div style="background: #f8f9fa; border-left: 4px solid #1a4a7c; padding: 10px; margin-bottom: 20px;">
-                <h3 style="margin: 0; color: #1a4a7c; font-size: 12px; text-transform: uppercase;">Projected Rental Income</h3>
-                <div style="font-size: 18px; color: #333; font-weight: bold; margin: 3px 0;">
-                    Range: <span id="propRentRange" style="color: #3d9970;">$0 - $0</span>
-                </div>
-                <div style="font-size: 9px; color: #888; font-style: italic;">
-                    *Estimates are based on current market conditions +/- 10% and are subject to change due to market standards.
-                </div>
-            </div>
-        </div>
-
-        <h3 style="color: #1a4a7c; border-bottom: 1px solid #ffca28; padding-bottom: 3px; font-size: 14px; margin-bottom: 10px;">1. INITIAL INVESTMENT (Due at Signing)</h3>
+        <h2>Phase 3: Live Demo Co-Pilot</h2>
         
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px;">
-            <tr style="background-color: #f4f6f9;">
-                <td style="padding: 8px; border: 1px solid #eee;"><strong>Contingency Reserve</strong> (Refundable)</td>
-                <td style="padding: 8px; border: 1px solid #eee; text-align: right;">$<span id="propReserve">0.00</span></td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border: 1px solid #eee;"><strong>Onboarding Fee</strong> (<span id="propFeeDesc">Standard</span>)</td>
-                <td style="padding: 8px; border: 1px solid #eee; text-align: right;">$<span id="propOnboard">0.00</span></td>
-            </tr>
-            <tr style="background-color: #333; color: white;">
-                <td style="padding: 8px; border: 1px solid #333;"><strong>TOTAL INITIAL FUNDS</strong></td>
-                <td style="padding: 8px; border: 1px solid #333; text-align: right; font-weight: bold;">$<span id="propTotalInitial">0.00</span></td>
-            </tr>
-        </table>
-
-        <div style="background: #fff8e1; border: 1px solid #ffecb3; padding: 8px; margin-bottom: 20px; border-radius: 4px;">
-            <p style="margin: 0; font-size: 10px; color: #5d4037; line-height: 1.3;">
-                <strong>About the Reserve:</strong> We maintain a small, monthly-replenished maintenance reserve to handle minor, unexpected repairs instantly. This avoids pausing work for owner approval, keeping tenants happy and your property safe. This reserve is not a fee; it remains your money and is fully refundable if you end our services.
-            </p>
-        </div>
-
-        <h3 style="color: #1a4a7c; border-bottom: 1px solid #ffca28; padding-bottom: 3px; font-size: 14px; margin-bottom: 10px;">2. MONTHLY MANAGEMENT PLANS</h3>
-
-        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-            <div style="flex: 1; border: 1px solid #ddd; border-radius: 6px; padding: 15px; background: white;">
-                <h4 style="margin: 0; color: #555; font-size: 13px;">Standard Plan</h4>
-                <div style="font-size: 20px; font-weight: bold; color: #333; margin: 8px 0;">
-                    $<span id="propStd">0.00</span><span style="font-size: 11px; font-weight: normal; color: #777;">/mo</span>
-                </div>
-                <ul style="padding-left: 15px; margin: 0; font-size: 11px; color: #666; line-height: 1.6;">
-                    <li>Full Service Management</li>
-                    <li>Maintenance Coordination</li>
-                    <li>24/7 Owner Portal Access</li>
+        <div id="demoStep1" class="demo-step">
+            <span class="step-label">Step 1: The Greeting & Agenda</span>
+            <div class="script-box">
+                <p style="margin-top:0;">
+                    "Hi [Owner], I'm [Your Name] with PropertyWize. Thank you for taking the time out to learn more about our services. I've completed the Property Analysis for <strong id="scriptAddr">Address</strong>. I see you have <strong id="scriptUnits">1</strong> property(ies)..."
+                </p>
+                <ul style="margin-bottom:15px; line-height: 1.6;">
+                    <li>1. Brief Video Overview</li>
+                    <li>2. Property Rental Analysis</li>
+                    <li>3. Open Questions</li>
+                    <li>4. Closing & Quote</li>
                 </ul>
             </div>
-
-            <div style="flex: 1; border: 2px solid #3d9970; border-radius: 6px; padding: 15px; background: #f0fff4; position: relative;">
-                <div style="position: absolute; top: -8px; right: 10px; background: #3d9970; color: white; font-size: 9px; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">Recommended</div>
-                <h4 style="margin: 0; color: #2e7d5a; font-size: 13px;">Premium Plan</h4>
-                <div style="font-size: 20px; font-weight: bold; color: #2e7d5a; margin: 8px 0;">
-                    $<span id="propPrem">0.00</span><span style="font-size: 11px; font-weight: normal; color: #2e7d5a;">/mo</span>
-                </div>
-                <p style="font-size: 10px; color: #155724; line-height: 1.3; margin-top: 5px;">
-                    <strong>Why:</strong> Protects against security deposit limits. Includes <strong>2 Months Rent Protection</strong> for unpaid rent or damages.
-                </p>
+            
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showPhase(2)">Back to Prep</button>
+                <button class="btn btn-small btn-blue" onclick="showDemoStep(2)">Next: Video Intro ➡</button>
             </div>
         </div>
 
-        <div style="border-top: 2px solid #eee; padding-top: 15px; margin-top: 20px;">
-            <div style="background:#e8f5e9; padding: 15px; border-radius: 6px; border-left: 5px solid #2e7d5a; text-align: left;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h4 style="margin: 0; color: #2e7d5a; font-size: 14px; text-transform: uppercase;">✅ READY TO START? (Fast Track)</h4>
-                        <p style="margin: 5px 0 0 0; font-size: 11px; color: #333;">Skip the demo and get your Management Agreement today.</p>
-                    </div>
-                    <a id="signupLink" href="#" style="background:#2e7d5a; color:white; padding:8px 15px; border-radius:4px; font-weight:bold; font-size:12px; text-decoration:none;">SIGN UP NOW</a>
+        <div id="demoStep2" class="demo-step hidden">
+            <span class="step-label">Step 2: The Tech Overview</span>
+            <p>Share screen and play the video. Mute yourself while it plays.</p>
+            <button class="btn btn-blue" style="width:auto; padding:12px;" onclick="window.open('https://drive.google.com/file/d/1sYIT1XfoUvqyt8Txsp0adYPwXfV5wTSt/view')">▶ Play 10-Min Overview Video</button>
+
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showDemoStep(1)">⬅ Back</button>
+                <button class="btn btn-small btn-blue" onclick="showDemoStep(3)">Next: Market Analysis ➡</button>
+            </div>
+        </div>
+
+        <div id="demoStep3" class="demo-step hidden">
+            <span class="step-label">Step 3: Rental Market Analysis</span>
+            
+            <div id="rentometerScript">
+                <p>Refer to the <strong>Rentometer Report</strong> (Median Rent).</p>
+                <div class="script-box">
+                    <p>"Mr./Ms. Owner, looking at the data from Rentometer, the <strong>median rent</strong> is <strong style="background-color: #fff3cd; padding: 0 4px;">[Insert Rent Amount]</strong>."</p>
                 </div>
             </div>
-            <div style="margin-top: 15px; text-align: center;">
-                <p style="font-size: 10px; color: #888; margin-bottom: 5px;">Need more info first?</p>
-                <a href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3zbwCNKhw-BEc9yIPlupXupRUoVoxgMdELzN0jUe6NYdOfGIaS46mhZT4CHQd82a2jKfbYAZAK" style="color: #1a4a7c; font-weight: bold; font-size: 11px; text-decoration: underline;">Book a Live Demo</a>
+
+            <div id="inheritedMsg" class="hidden" style="background:#e3f2fd; padding:15px; border-left:5px solid #2196f3; margin-bottom:20px;">
+                <strong>ℹ️ INHERITED/RETURNING CLIENT:</strong> Rentometer Analysis skipped.
+            </div>
+            
+            <p style="margin-top:15px;">
+                <button class="btn btn-blue" style="width:auto; padding:12px;" onclick="window.open('https://docs.google.com/spreadsheets/d/1ZfIML5GmyduXgyXoW1n4tE1AjDI5plEWyAVZbcIxIeI/edit?usp=drive_link')"> ▶Open Owner FAQ Sheet</button>
+            </p>
+
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showDemoStep(2)">⬅ Back</button>
+                <button class="btn btn-small btn-blue" onclick="showDemoStep(4)">Next: The Close ➡</button>
+            </div>
+        </div>
+
+        <div id="demoStep4" class="demo-step hidden">
+            <span class="step-label">Step 4: The Closing Pitch</span>
+            
+            <div class="script-box" style="background-color: #fff8e1; font-size: 18px;">
+                <p>"Mr./Ms. <strong id="scriptOwnerClose" style="color:#1a4a7c; text-decoration:underline;">Owner</strong>, honestly, looking at this asset, I want to make sure you sleep easy at night..."</p>
+
+                <p>
+                    "The Standard Plan is <span id="closeStdPct">--%</span> (<span id="closeStdDol">$0.00</span>), but for <span id="closePremPct">--%</span> (<span id="closePremDol">$0.00</span>), you get that full Rent Guarantee protection included."
+                </p>
+                
+                <p style="font-weight:bold; color: #1a4a7c;">"Does the peace of mind of the Premium Plan sound like the right fit for you?"</p>
+            </div>
+
+            <div class="demo-nav">
+                <button class="btn btn-small btn-back" onclick="showDemoStep(3)">⬅ Back</button>
+                <button class="btn btn-small" style="background-color: #27ae60;" onclick="showPhase(4)">Finish Demo ✅</button>
             </div>
         </div>
     </div>
 
-    <div id="qualifying-report-pdf" style="width: 750px; padding:30px; background:white; color:#333; font-family:sans-serif; box-sizing: border-box; margin-top: 50px;">
-        <div style="border-bottom:4px solid #1a4a7c; padding-bottom:20px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-            <div><h1 style="color:#1a4a7c; margin:0; font-size:24px;">Property Intake Report</h1><p style="margin:5px 0 0 0; color:#666;">Internal Use Only</p></div>
-            <div style="text-align:right;"><h2 style="color:#1a4a7c; margin:0;">PropertyWize</h2></div>
+    <div id="phase4" class="card hidden" style="background:#e8f5e9; border-top: 5px solid #27ae60;">
+        <h2 style="color:#27ae60; border-color:#c8e6c9;">Phase 4: Demo Completed</h2>
+        <div style="text-align:center; padding: 20px;">
+            <h1>🎉 GREAT JOB!</h1>
+            <p>Please submit your Quality Control details below.</p>
         </div>
+        
+        <label>1. Google Meet Recording URL</label>
+        <input type="text" id="recUrl">
+        
+        <button class="btn btn-blue" onclick="alert('Success! Session logged for Audit.')">SUBMIT TO OPS MANAGER</button>
+        <br><br>
+        <button class="btn btn-back" style="width:auto; margin:0 auto; display:block;" onclick="showPhase(1)">Start New Lead</button>
+    </div>
+
+</div>
+
+<div id="pdf-template" style="display:none;">
+    <div id="qualifying-report-pdf" style="width: 750px; padding:30px; background:white; color:#333; font-family:sans-serif; box-sizing: border-box;">
+        <div style="border-bottom:4px solid #1a4a7c; padding-bottom:20px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h1 style="color:#1a4a7c; margin:0; font-size:24px;">Property Intake Report</h1>
+                <p style="margin:5px 0 0 0; color:#666;">Pre-Demo Qualification Audit</p>
+            </div>
+            <div style="text-align:right;">
+                <h2 style="color:#1a4a7c; margin:0;">PropertyWize</h2>
+                <p style="margin:0; font-size:12px;">Sales Division</p>
+            </div>
+        </div>
+
         <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:10px; font-size:14px;">1. PROPERTY SNAPSHOT</h3>
         <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
-            <tr><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Agent:</strong> <span id="pdfAgent"></span></td><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Date:</strong> <span id="pdfDate"></span></td></tr>
-            <tr><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Address:</strong> <span id="pdfAddress"></span></td><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Owner:</strong> <span id="pdfOwner"></span></td></tr>
-            <tr><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Market Rent:</strong> $<span id="pdfRent"></span></td><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Goal:</strong> <span id="pdfGoal"></span></td></tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Agent:</strong> <span id="pdfAgent"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Date:</strong> <span id="pdfDate"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Owner:</strong> <span id="pdfOwner"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Address:</strong> <span id="pdfAddress"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Units:</strong> <span id="pdfUnits"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Market Rent:</strong> $<span id="pdfRent"></span></td>
+            </tr>
         </table>
-        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:10px; font-size:14px;">2. SECURITY & AUDIT</h3>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
-            <tr><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Niche Grade:</strong> <span id="pdfGrade"></span></td><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Board-Ups:</strong> <span id="pdfBU"></span></td></tr>
-            <tr><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Crime Status:</strong> <span id="pdfCrime"></span></td><td style="padding:8px; border-bottom:1px solid #eee;"><strong>Rec:</strong> <span id="pdfRecText"></span></td></tr>
-        </table>
-    </div>
 
+        <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:10px; font-size:14px;">2. SECURITY AUDIT</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Niche Grade:</strong> <span id="pdfGrade"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Board-Ups:</strong> <span id="pdfBU"></span></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Crime Status:</strong> <span id="pdfCrime"></span></td>
+                <td style="padding:8px; border-bottom:1px solid #eee;"><strong>Goal:</strong> <span id="pdfGoal"></span></td>
+            </tr>
+        </table>
+
+        <div style="page-break-inside: avoid;">
+            <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:10px; font-size:14px;">3. MANAGEMENT FEE QUOTE</h3>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+                <tr>
+                    <td style="padding:8px; border-bottom:1px solid #eee;">
+                        <strong>Contingency Reserve (Refundable):</strong> $<span id="pdfReserve">0.00</span>
+                    </td>
+                    <td style="padding:8px; border-bottom:1px solid #eee;">
+                        <strong>Onboarding:</strong> $<span id="pdfOnboardFee">0.00</span> /unit
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:8px; border-bottom:1px solid #eee;">
+                        <strong>Standard (<span id="pdfStdPct">--%</span>):</strong> 
+                        <span id="pdfStdDol">$0.00</span> /mo
+                    </td>
+                    <td style="padding:8px; border-bottom:1px solid #eee; color:#155724; background-color:#d4edda; font-weight:bold;">
+                        <strong>Premium (<span id="pdfPremPct">--%</span>):</strong> 
+                        <span id="pdfPremDol">$0.00</span> /mo
+                    </td>
+                </tr>
+            </table>
+
+            <h3 style="background:#1a4a7c; color:white; padding:8px 12px; margin-bottom:10px; font-size:14px;">4. RECOMMENDATION</h3>
+            <div style="background:#f4f6f9; padding:15px; border-left:5px solid #1a4a7c; border-radius:4px; font-size:13px;">
+                <p id="pdfRecText" style="margin:0; font-weight:bold; line-height:1.5;">[Recommendation]</p>
+            </div>
+        </div>
+
+        <div style="margin-top:30px; border-top:1px solid #ddd; padding-top:10px; font-size:10px; color:#999; text-align:center;">
+            Verified by PropertyWize Sales Engine v22.2
+        </div>
+    </div>
 </div>
 
 <script>
-    let globalData = { feeDesc: "Standard", obRate: 300, stdTotal: 0, premTotal: 0, reserve: 0, totalInitial: 0 };
+    // --- GLOBAL VARIABLES FOR EMAIL ---
+    let global_feeDesc = "Standard";
+    let global_obRate = 300;
+    let global_stdTotal = 0;
+    let global_premTotal = 0;
+    let global_reserve = 0;
+    let global_totalInitial = 0;
 
+    /// 1. DYNAMIC FEE CALCULATOR
     function updateFees() {
         const u = parseInt(document.getElementById('unitsInput').value) || 0;
         const props = parseInt(document.getElementById('propsInput').value) || 1;
@@ -532,130 +608,121 @@
         const isRecentReturn = document.getElementById('networkHistory').value === "true";
         const occupancy = document.getElementById('occupancyInput').value;
         
-        let obRate = 300; let feeDesc = "Standard Onboarding";
-        if (occupancy === "Vacant") { obRate = 0; feeDesc = "Vacant Unit (Fee Waived)"; } 
-        else if (u >= 25) { obRate = 50; feeDesc = "Bulk Volume (25+ Units)"; } 
-        else if (props >= 3 || isRecentReturn) { obRate = 150; feeDesc = "Preferred/Returning Owner"; }
+        // --- 1. Onboarding Fee Logic ---
+        let obRate = 300; 
+        let feeDesc = "Standard Onboarding";
 
+        // Logic A: Vacancy Override
+        if (occupancy === "Vacant") {
+            obRate = 0;
+            feeDesc = "Vacant Unit (Fee Waived)";
+        } else {
+            // Logic B: Occupied Pricing Tree
+            if (u >= 25) {
+                obRate = 50;
+                feeDesc = "Bulk Volume (25+ Units)";
+            } else if (props >= 3 || isRecentReturn) {
+                obRate = 150;
+                feeDesc = "Preferred/Returning Owner";
+            }
+        }
+
+        // --- 2. Monthly Fee Logic ---
         let sRate = (j === "County") ? 0.08 : 0.10;
         let pRate = (j === "County") ? 0.10 : 0.12;
-        if (u === 2) { sRate -= 0.01; pRate -= 0.01; } else if (u >= 3) { sRate -= 0.02; pRate -= 0.02; }
+
+        if (u === 2) { sRate -= 0.01; pRate -= 0.01; }
+        else if (u >= 3) { sRate -= 0.02; pRate -= 0.02; }
         
-        const stdTotal = (r * sRate); const premTotal = (r * pRate);
-        const reserveTotal = u * 500; const totalInitial = (u * obRate) + reserveTotal;
+        const stdTotal = (r * sRate); 
+        const premTotal = (r * pRate);
+        const onboardingTotal = u * obRate;
+        const reserveTotal = u * 500; // $500 per unit reserve
+        
+        // Globals for Email
+        global_feeDesc = feeDesc;
+        global_obRate = obRate;
+        global_stdTotal = stdTotal;
+        global_premTotal = premTotal;
+        global_reserve = reserveTotal;
+        global_totalInitial = onboardingTotal + reserveTotal;
 
-        globalData = { feeDesc: feeDesc, obRate: obRate, stdTotal: stdTotal, premTotal: premTotal, reserve: reserveTotal, totalInitial: totalInitial };
-
+        // Update UI
         document.getElementById('stdDisplay').innerText = "$" + stdTotal.toFixed(2);
         document.getElementById('premDisplay').innerText = "$" + premTotal.toFixed(2);
         document.getElementById('reserveDisplay').innerText = "$" + reserveTotal.toFixed(0);
-        document.getElementById('onboardDisplay').innerText = "$" + (u * obRate).toFixed(0);
+        document.getElementById('onboardDisplay').innerText = "$" + onboardingTotal.toFixed(0);
         document.getElementById('feeTierDisplay').innerText = feeDesc;
+
+        // Update PDF fields
+        document.getElementById('pdfStdPct').innerText = (sRate * 100).toFixed(0) + "%";
+        document.getElementById('pdfStdDol').innerText = "$" + stdTotal.toFixed(2);
+        document.getElementById('pdfPremPct').innerText = (pRate * 100).toFixed(0) + "%";
+        document.getElementById('pdfPremDol').innerText = "$" + premTotal.toFixed(2);
+        document.getElementById('pdfOnboardFee').innerText = obRate.toFixed(2);
+        document.getElementById('pdfReserve').innerText = reserveTotal.toFixed(2);
+        document.getElementById('pdfFeeDesc').innerText = feeDesc;
         
-        document.getElementById('pdfRent').innerText = r;
+        // Update Closing Script
+        document.getElementById('closeStdPct').innerText = (sRate * 100).toFixed(0) + "%";
+        document.getElementById('closeStdDol').innerText = "$" + stdTotal.toFixed(2);
+        document.getElementById('closePremPct').innerText = (pRate * 100).toFixed(0) + "%";
+        document.getElementById('closePremDol').innerText = "$" + premTotal.toFixed(2);
     }
 
-    function generateProposalPDF() {
-        const owner = document.getElementById('ownerInput').value || "Client";
-        const addr = document.getElementById('addressInput').value || "Address";
-        const r = parseFloat(document.getElementById('rentInput').value) || 0;
-
-        document.getElementById('propOwner1').innerText = owner;
-        document.getElementById('propDate1').innerText = new Date().toLocaleDateString();
-        document.getElementById('propAddress1').innerText = addr;
-
-        const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-        document.getElementById('propRentRange').innerText = `${fmt.format(r * 0.9)} - ${fmt.format(r * 1.1)}`;
-
-        document.getElementById('propReserve').innerText = globalData.reserve.toFixed(2);
-        document.getElementById('propOnboard').innerText = (globalData.obRate * (parseInt(document.getElementById('unitsInput').value) || 1)).toFixed(2);
-        document.getElementById('propFeeDesc').innerText = globalData.feeDesc;
-        document.getElementById('propTotalInitial').innerText = globalData.totalInitial.toFixed(2);
-        document.getElementById('propStd').innerText = globalData.stdTotal.toFixed(2);
-        document.getElementById('propPrem').innerText = globalData.premTotal.toFixed(2);
-
-        // --- UPDATE "SIGN UP" BUTTON HREF FOR PDF ---
-        const signUpSubject = `READY TO START: Management Agreement for ${addr}`;
-        const signUpBody = `Dear PropertyWize Team,\n\nI have reviewed your proposal and I am ready to move forward with bypassing the demo to onboard my property immediately.\n\n1. MY SELECTION:\n* Property: ${addr}\n* Desired Start Date: [Date]\n\n2. ONBOARDING DOCUMENTS:\nI understand I need to provide the following to generate the agreement:\n[ ] Title/Deed Papers\n[ ] Owner's Operating Agreement (if LLC)\n[ ] Driver's License / State ID\n\nPlease prepare the Property Management Agreement via DocuSign.\n\nBest regards,\n${owner}`;
-        
-        const mailtoLink = `mailto:EndMyHeadache@propertywize.com?subject=${encodeURIComponent(signUpSubject)}&body=${encodeURIComponent(signUpBody)}`;
-        document.getElementById('signupLink').href = mailtoLink;
-
-        // Generate PDF
-        const element = document.getElementById('proposal-pdf');
-        html2pdf().set({
-            margin: 0,
-            filename: `Proposal_${owner.split(' ')[0]}.pdf`,
-            image: { type: 'jpeg', quality: 1.0 },
-            html2canvas: { scale: 1.5, useCORS: true },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        }).from(element).save();
-    }
-    
-    function generateBrandedPDF() {
-        document.getElementById('pdfAgent').innerText = document.getElementById('agentInput').value;
-        document.getElementById('pdfOwner').innerText = document.getElementById('ownerInput').value;
-        document.getElementById('pdfAddress').innerText = document.getElementById('addressInput').value;
-        document.getElementById('pdfDate').innerText = new Date().toLocaleDateString();
-        
-        const nSelect = document.getElementById('nGrade');
-        document.getElementById('pdfGrade').innerText = nSelect.options[nSelect.selectedIndex].text;
-        document.getElementById('pdfRecText').innerText = document.getElementById('recText').innerText;
-
-        const element = document.getElementById('qualifying-report-pdf');
-        html2pdf().set({ margin:0.5, filename:'PW_Intake_Report.pdf', html2canvas:{scale:2}, jsPDF:{unit:'in', format:'letter', orientation:'portrait'}}).from(element).save();
-    }
-
-    // --- AGENT EMAIL (OPENS MAIL APP) ---
-    function openProposalEmail() {
+    // 2. COPY EMAIL TEMPLATE (APPROVED TEXT)
+    function copyEmailTemplate() {
         const ownerName = document.getElementById('ownerInput').value || "Owner";
-        const addr = document.getElementById('addressInput').value;
-        const r = parseFloat(document.getElementById('rentInput').value) || 0;
-        
-        const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-        const rentRange = `${fmt.format(r * 0.9)} - ${fmt.format(r * 1.1)}`;
+        const units = document.getElementById('unitsInput').value;
+        const props = document.getElementById('propsInput').value;
 
-        const emailSubject = `Management Proposal | ${addr}`;
-        const emailBody = `Dear ${ownerName},
+        const emailText = `Subject: Property Management Proposal | ${document.getElementById('addressInput').value}
 
-Thank you for considering PropertyWize. Please find the attached detailed proposal PDF for your review.
+Dear ${ownerName},
 
-Based on our analysis of your portfolio, here is the summary:
+Thank you for considering PropertyWize as your management partner. We know you have choices, but we pride ourselves on being the safest choice for your asset. We have operated in excellence for over 10 years, and our owner-operators bring more than 30 years of combined experience to the table.
 
-=== PROJECTED RENTAL INCOME ===
-Range: ${rentRange}
-(Estimates are based on current market conditions +/- 10% and are subject to change due to market standards)
+Based on our analysis of your portfolio, here is your customized proposal:
 
-=== 1. INITIAL INVESTMENT ===
-- Contingency Reserve: $${globalData.reserve.toFixed(2)} ($500/unit - Refundable)
-- Onboarding: $${(globalData.obRate * parseInt(document.getElementById('unitsInput').value)).toFixed(2)} (${globalData.feeDesc})
+1. INITIAL ONE-TIME FUNDS (Due at Signing)
+------------------------------------------
+• Contingency Reserve: $${global_reserve.toFixed(2)} ($500.00 per unit - Refundable)
+• Onboarding Fee: $${(global_obRate * units).toFixed(2)} (${global_feeDesc})
+------------------------------------------
+• TOTAL INITIAL INVESTMENT: $${global_totalInitial.toFixed(2)}
 
-=== 2. MONTHLY PLANS ===
-- Standard: $${globalData.stdTotal.toFixed(2)}/mo
-- Premium: $${globalData.premTotal.toFixed(2)}/mo (Includes Rent Protection)
+2. MONTHLY MANAGEMENT PLANS
+We recommend the Premium Plan to shift the risk off your shoulders.
 
-We recommend the Premium Plan to protect against MD security deposit limits.
+OPTION A: PREMIUM PLAN (Recommended)
+• Rate: $${global_premTotal.toFixed(2)} /mo
+• Why choose this? In Maryland, new regulations limit the security deposit amount you can collect, which is often not enough to cover unexpected losses. The Premium Plan solves this by providing 2 months of additional rent protection in the event a tenant leaves owing a balance for damages or unpaid rent.
 
-*** READY TO START IMMEDIATELY? ***
-We offer a Fast Track option to skip the demo and get your agreement today.
-Simply reply to this email or email 'EndMyHeadache@propertywize.com' with:
-1. Your desired start date
-2. Attached Title/Deed and ID
+OPTION B: STANDARD PLAN
+• Rate: $${global_stdTotal.toFixed(2)} /mo
+• Includes: Full-service management, maintenance coordination, and 24/7 online portal access.
 
-Best,
+3. NEXT STEPS
+We would love to walk you through our technology and answer any specific questions.
+
+👉 [CLICK HERE TO SCHEDULE YOUR LIVE DEMO]
+
+We look forward to partnering with you!
+
+Best regards,
 The PropertyWize Team`;
 
-        window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-        
-        setTimeout(() => {
-            alert("⚠️ IMPORTANT: The email draft has opened.\n\nPLEASE REMEMBER TO ATTACH THE PDF PROPOSAL!");
-        }, 500);
+        navigator.clipboard.writeText(emailText).then(() => {
+            alert("✅ Quote Email Copied to Clipboard!");
+        });
     }
-    
+
+    // 3. QUALIFICATION ENGINE
     function runLogic() {
         const n = document.getElementById('nGrade').value;
         const b = document.getElementById('bUps').value;
         const c = document.getElementById('crimeInput').value;
+        
         const res = document.getElementById('machineResult');
         const btn = document.getElementById('nextBtn');
         const recBox = document.getElementById('recBox');
@@ -663,6 +730,7 @@ The PropertyWize Team`;
         const addr = document.getElementById('addressInput').value || "this property";
 
         const fail = (n === 'fail' || b === 'fail' || c === 'fail');
+
         recBox.classList.remove('hidden');
 
         if (fail) {
@@ -676,12 +744,52 @@ The PropertyWize Team`;
         }
     }
 
+    // 4. PDF GENERATOR
+    function generateBrandedPDF() {
+        // Sync Basic Data
+        document.getElementById('pdfAgent').innerText = document.getElementById('agentInput').value || "-";
+        document.getElementById('pdfOwner').innerText = document.getElementById('ownerInput').value || "-";
+        document.getElementById('pdfAddress').innerText = document.getElementById('addressInput').value || "-";
+        document.getElementById('pdfRent').innerText = document.getElementById('rentInput').value || "0";
+        document.getElementById('pdfUnits').innerText = document.getElementById('unitsInput').value || "1";
+        
+        document.getElementById('pdfDate').innerText = document.getElementById('intakeDate').value || new Date().toLocaleDateString();
+        document.getElementById('pdfGoal').innerText = document.getElementById('goalInput').value;
+        
+        // Sync Dropdowns
+        const nSelect = document.getElementById('nGrade');
+        document.getElementById('pdfGrade').innerText = nSelect.options[nSelect.selectedIndex].text;
+        const bSelect = document.getElementById('bUps');
+        document.getElementById('pdfBU').innerText = bSelect.options[bSelect.selectedIndex].text;
+        const cSelect = document.getElementById('crimeInput');
+        document.getElementById('pdfCrime').innerText = cSelect.options[cSelect.selectedIndex].text;
+        document.getElementById('pdfRecText').innerText = document.getElementById('recText').innerText;
+
+        // Generate PDF
+        const element = document.getElementById('qualifying-report-pdf');
+        html2pdf().set({
+            margin: 0.2, 
+            filename: 'PW_Intake_Report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }).from(element).save();
+    }
+
+    // 5. NAVIGATION
     function showPhase(n) {
         document.getElementById('phase1').classList.add('hidden');
         document.getElementById('phase2').classList.add('hidden');
         document.getElementById('phase3').classList.add('hidden');
         document.getElementById('phase4').classList.add('hidden');
         document.getElementById('phase' + n).classList.remove('hidden');
+        
+        if (n === 3) {
+            document.getElementById('scriptAddr').innerText = document.getElementById('addressInput').value;
+            const fullOwner = document.getElementById('ownerInput').value || "Owner";
+            document.getElementById('scriptOwnerClose').innerText = fullOwner.split(' ').pop();
+            showDemoStep(1); 
+        }
     }
 
     function showDemoStep(n) {
@@ -690,6 +798,7 @@ The PropertyWize Team`;
         document.getElementById('demoStep3').classList.add('hidden');
         document.getElementById('demoStep4').classList.add('hidden');
         document.getElementById('demoStep' + n).classList.remove('hidden');
+
         if (n === 3) {
             const isRecent = document.getElementById('networkHistory').value === "true";
             if (isRecent) {
@@ -701,6 +810,198 @@ The PropertyWize Team`;
             }
         }
     }
+	/***********************
+ * MANAGEMENT PROPOSAL
+ * FULL WORKING VERSION
+ ***********************/
+
+// Opens client email (Fast Track)
+function openFastTrackEmail() {
+
+    const address = document.getElementById('addressInput').value || "Address";
+    const owner = document.getElementById('ownerInput').value || "Client";
+
+    const body = `
+Dear PropertyWize Team,
+
+I have reviewed your proposal and I am ready to move forward with bypassing the demo to onboard my property immediately.
+
+1. MY SELECTION:
+* Property: ${address}
+* Desired Start Date: ___________
+
+2. ONBOARDING DOCUMENTS:
+I understand I need to provide the following to generate the agreement:
+[ ] Title/Deed Papers
+[ ] Owner's Operating Agreement (if LLC)
+[ ] Driver's License / State ID
+
+Please prepare the Property Management Agreement via DocuSign.
+
+Best regards,
+${owner}
+`.trim();
+
+    const link =
+        "mailto:EndMyHeadache@propertywize.com" +
+        "?subject=Fast Track Onboarding Request" +
+        "&body=" + encodeURIComponent(body);
+
+    window.location.href = link;
+}
+
+
+// Opens calendar
+function openDemoCalendar() {
+
+    window.open(
+        "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3zbwCNKhw-BEc9yIPlupXupRUoVoxgMdELzN0jUe6NYdOfGIaS46mhZT4CHQd82a2jKfbYAZAK",
+        "_blank"
+    );
+
+}
+
+
+// Generates Proposal PDF
+// Generates Proposal PDF (FINAL WORKING VERSION)
+function generateProposalPDF() {
+
+    const address = document.getElementById('addressInput').value || "Address";
+    const owner = document.getElementById('ownerInput').value || "Client";
+    const rent = document.getElementById('rentInput').value || "0";
+    const units = document.getElementById('unitsInput').value || "1";
+
+    const today = new Date().toLocaleDateString();
+
+    const html = `
+<div style="
+    width:680px;
+    margin:auto;
+    padding:30px;
+    font-family:Segoe UI,Arial;
+    background:#fff;
+    color:#333;
+    line-height:1.4;
+">
+
+<!-- HEADER -->
+<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a4a7c;padding-bottom:12px;">
+    <h1 style="color:#1a4a7c;margin:0;">PROPERTYWIZE</h1>
+    <div style="text-align:right;font-size:12px;">
+        <strong>MANAGEMENT PROPOSAL</strong><br>
+        ${today} | ${owner}
+    </div>
+</div>
+
+<p style="margin-top:15px;">
+<strong>Property:</strong> ${address}
+</p>
+
+<p>
+Thank you for considering PropertyWize. We have operated in excellence for over 10 years.
+</p>
+
+<!-- RENT -->
+<div style="background:#f4f6f9;padding:12px;border-left:4px solid #1a4a7c;margin:15px 0;">
+    <strong>PROJECTED RENT</strong><br>
+    $${rent} / month
+</div>
+
+<!-- INITIAL -->
+<h3 style="border-bottom:2px solid #ffca28;padding-bottom:4px;">1. INITIAL INVESTMENT</h3>
+
+<table width="100%" style="font-size:13px;border-collapse:collapse;">
+<tr>
+<td>Reserve (Refundable)</td>
+<td align="right">$${global_reserve.toFixed(2)}</td>
+</tr>
+<tr>
+<td>Onboarding</td>
+<td align="right">$${(global_obRate * units).toFixed(2)}</td>
+</tr>
+<tr style="background:#333;color:#fff;font-weight:bold;">
+<td>TOTAL</td>
+<td align="right">$${global_totalInitial.toFixed(2)}</td>
+</tr>
+</table>
+
+<!-- PLANS -->
+<h3 style="border-bottom:2px solid #ffca28;padding-bottom:4px;margin-top:18px;">
+2. MONTHLY PLANS
+</h3>
+
+<table width="100%" style="font-size:13px;margin-top:8px;">
+<tr>
+<td>
+<strong>Standard</strong><br>
+$${global_stdTotal.toFixed(2)}/mo
+</td>
+
+<td>
+<strong>Premium (Recommended)</strong><br>
+$${global_premTotal.toFixed(2)}/mo
+</td>
+</tr>
+</table>
+
+<!-- FAST TRACK -->
+<div style="
+background:#e8f5e9;
+padding:15px;
+margin-top:18px;
+border-left:5px solid #27ae60;
+border-radius:5px;
+font-size:13px;
+">
+
+<strong>✅ FAST TRACK</strong><br>
+Skip the demo and start immediately.
+
+<br><br>
+
+<a href="mailto:EndMyHeadache@propertywize.com?subject=Fast Track Onboarding Request"
+style="
+display:inline-block;
+background:#27ae60;
+color:white;
+padding:8px 14px;
+border-radius:5px;
+text-decoration:none;
+font-weight:bold;">
+SIGN UP NOW
+</a>
+
+</div>
+
+<!-- DEMO -->
+<p style="text-align:center;margin-top:15px;font-size:12px;">
+
+<a href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3zbwCNKhw-BEc9yIPlupXupRUoVoxgMdELzN0jUe6NYdOfGIaS46mhZT4CHQd82a2jKfbYAZAK"
+target="_blank"
+style="color:#1a4a7c;font-weight:bold;">
+Book a Live Demo
+</a>
+
+</p>
+
+</div>
+`;
+
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = html;
+    document.body.appendChild(wrapper);
+
+    html2pdf().set({
+        margin: 0.25,
+        filename: "PW_Management_Proposal.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+        pagebreak: { mode: ['avoid-all'] }
+    }).from(wrapper).save().then(() => {
+        document.body.removeChild(wrapper);
+    });
+}
 </script>
 </body>
 </html>
